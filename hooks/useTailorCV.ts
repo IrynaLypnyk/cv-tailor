@@ -4,6 +4,8 @@ import { useState } from "react";
 import type {
   CVSection,
   ConfirmationItem,
+  ConfirmationStatus,
+  EvidenceSource,
   GlobalAssessment,
   SectionRewrite,
 } from "@/lib/llm/types";
@@ -33,7 +35,10 @@ export interface TailorCVState {
 
 export interface TailorCVActions {
   assess: (cvFile: File, jobDescription: string) => Promise<void>;
-  updateConfirmation: (id: string, answer: ConfirmationItem["answer"]) => void;
+  updateConfirmation: (
+    id: string,
+    patch: { status?: ConfirmationStatus; evidenceSource?: EvidenceSource; evidenceNote?: string }
+  ) => void;
   toggleSection: (id: string) => void;
   setAdditionalContext: (text: string) => void;
   setGenerateCoverLetter: (value: boolean) => void;
@@ -125,11 +130,11 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
       setSections(extractedSections);
       setAssessment(globalAssessment);
 
-      // Initialise confirmations from the assessment — all answers start as null
+      // Initialise confirmations from the assessment — all statuses start as null
       setConfirmations(
         globalAssessment.needsConfirmation.map((item) => ({
           ...item,
-          answer: null,
+          status: null,
         }))
       );
 
@@ -147,10 +152,19 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
 
   function updateConfirmation(
     id: string,
-    answer: ConfirmationItem["answer"]
+    patch: { status?: ConfirmationStatus; evidenceSource?: EvidenceSource; evidenceNote?: string }
   ) {
     setConfirmations((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, answer } : c))
+      prev.map((c) => {
+        if (c.id !== id) return c;
+        const updated = { ...c, ...patch };
+        // Clear evidence fields when the user selects "none" or resets
+        if (updated.status === "none" || updated.status === null) {
+          delete updated.evidenceSource;
+          delete updated.evidenceNote;
+        }
+        return updated;
+      })
     );
   }
 
