@@ -22,23 +22,40 @@ Do not invent or inflate experience.
 
 ## User confirmation rules
 
-For each uncertain requirement:
+For each uncertain requirement, the user has provided a status and optionally an evidence level and note.
 
-1. If the user selected "I have this experience":
-   You may include it carefully and professionally.
-   Do not exaggerate beyond the user’s note or confirmation.
+### Status rules
 
-2. If the user selected "I have similar experience":
-   Use adjacent wording.
-   Do not claim direct experience.
+1. "I have direct experience":
+   You may include it, but calibrate the language based on the evidence level below.
+   Do not treat all direct confirmations as production experience.
 
-   Example:
-   If JD mentions Zustand and CV/user confirms Redux experience only:
+2. "I have related / similar experience":
+   Use adjacent wording. Do not claim direct or production experience.
+   Example: if JD mentions Zustand and user confirms Redux experience:
    Good: "experience with scalable client-side state management using Redux"
    Bad: "experience with Zustand"
 
-3. If the user selected "I do not have this":
-   Do not include that requirement in rewritten CV text.
+3. "I do not have this":
+   Do not include that requirement anywhere in the rewritten CV text.
+
+### Evidence level rules
+
+Use the evidence level provided to calibrate language:
+
+- "professional / production work": Present as real professional experience.
+- "freelance / client project": Present as professional experience, but not equivalent to in-house product work.
+- "personal project / portfolio": Phrase as project exposure. Do not present as commercial experience.
+  Good: "exposure to X through personal project work" / Bad: "production experience with X"
+- "coursework / training": Phrase as training, fundamentals, or exposure.
+  Good: "AWS fundamentals through training" / Bad: "AWS experience" or listing as a skill
+- "basic exposure only": Mention only if directly essential, with clear qualification. Do not list as a skill.
+
+### Evidence note rules
+
+If the user provided an evidence note, treat it as their declared truth.
+User notes override generic assumptions. Do not invent details beyond what the note states.
+Example: if the note says "AWS only, no Azure production experience", do not mention Azure even if the JD requests it.
 
 ## Additional CV context
 
@@ -103,7 +120,19 @@ Only include skills supported by:
 - user confirmations
 - additional CV context
 
-If a skill was added from user confirmation, mention that in the notes.
+Separate strong production skills from exposure or training.
+
+Good examples:
+- Cloud exposure: AWS fundamentals through training
+- Build Tools: Vite exposure through personal project work
+- State & Data: Redux, REST APIs; adjacent experience with scalable state management patterns
+
+Bad examples:
+- Cloud Infrastructure: Azure, AWS (if user only confirmed AWS via coursework)
+- Expert in AWS and Azure
+- Production experience with Vite (if user only used it in a personal project)
+
+If a skill was added from user confirmation, mention the evidence level in the notes.
 
 ## Output notes
 

@@ -18,9 +18,25 @@ Your task is to write a concise, professional cover letter based on:
 - Use company, product, or domain information only if it appears in the job description or user cover letter notes.
 - If no company-specific reason is provided, keep motivation general and professional.
 - Do not include unsupported tools or skills.
-- If the user selected "I do not have this" for a requirement, do not include it.
-- If the user selected "I have similar experience", use careful adjacent wording.
-- If the user selected "I have this experience", include it carefully without exaggeration.
+
+### Confirmation status rules
+
+- If status is "I do not have this": do not mention that requirement.
+- If status is "I have related / similar experience": use careful adjacent wording; do not claim direct experience.
+- If status is "I have direct experience": include it, calibrated by the evidence level below.
+
+### Evidence level rules
+
+- "professional / production work": may present as genuine professional experience.
+- "freelance / client project": may present as professional experience, not equivalent to in-house product work.
+- "personal project / portfolio": phrase as project or portfolio exposure; do not present as commercial experience.
+- "coursework / training": phrase as training, exposure, or fundamentals; do not present as real-world experience.
+- "basic exposure only": do not mention in the cover letter unless unavoidable; never present as a skill.
+
+### Evidence note rules
+
+If the user provided an evidence note, treat it as declared truth.
+User notes override generic assumptions. Do not invent details beyond what the note states.
 
 ## Tone
 
