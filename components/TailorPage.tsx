@@ -76,7 +76,7 @@ export function TailorPage() {
   const isDone = status === "done";
 
   const hasUnansweredConfirmations = confirmations.some(
-    (c) => c.answer === null
+    (c) => c.status === null
   );
 
   return (
