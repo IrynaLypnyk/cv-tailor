@@ -1,11 +1,48 @@
 "use client";
 
+import { useState } from "react";
 import { useTailorCV } from "@/hooks/useTailorCV";
 import { CVUploadForm } from "./CVUploadForm";
 import { GlobalAssessmentView } from "./GlobalAssessmentView";
 import { ConfirmAndGenerateForm } from "./ConfirmAndGenerateForm";
 import { SectionRewriteResult } from "./SectionRewriteResult";
 import { StatusMessage } from "./StatusMessage";
+
+// ---------------------------------------------------------------------------
+// Local collapsible wrapper — only used on this page
+// ---------------------------------------------------------------------------
+
+function CollapsibleStep({
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="flex flex-col gap-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-4 border-b border-zinc-200 pb-3 text-left"
+      >
+        <span className="text-sm font-semibold text-foreground">{title}</span>
+        <span className="shrink-0 text-xs text-zinc-400">
+          {open ? "Hide" : "Show"}
+        </span>
+      </button>
+      {open && <div className="pt-6">{children}</div>}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export function TailorPage() {
   const {
@@ -32,9 +69,11 @@ export function TailorPage() {
 
   const showForm =
     status === "idle" || status === "assessing" || status === "error";
-  const showConfirming =
-    status === "confirming" || status === "generating";
-  const showResult = status === "done";
+  const showGuidedFlow =
+    status === "confirming" ||
+    status === "generating" ||
+    status === "done";
+  const isDone = status === "done";
 
   const hasUnansweredConfirmations = confirmations.some(
     (c) => c.answer === null
@@ -65,37 +104,68 @@ export function TailorPage() {
         </>
       )}
 
-      {showConfirming && assessment && (
+      {showGuidedFlow && assessment && (
         <>
-          <GlobalAssessmentView
-            assessment={assessment}
-            confirmations={confirmations}
-            onUpdateConfirmation={updateConfirmation}
-          />
-          <ConfirmAndGenerateForm
-            sections={sections}
-            selectedSectionIds={selectedSectionIds}
-            onToggleSection={toggleSection}
-            additionalContext={additionalContext}
-            onAdditionalContextChange={setAdditionalContext}
-            generateCoverLetter={generateCoverLetter}
-            onGenerateCoverLetterChange={setGenerateCoverLetter}
-            coverLetterNotes={coverLetterNotes}
-            onCoverLetterNotesChange={setCoverLetterNotes}
-            hasUnansweredConfirmations={hasUnansweredConfirmations}
-            onGenerate={generateRewrites}
-            isLoading={status === "generating"}
-          />
-          <StatusMessage status={status} error={null} />
-        </>
-      )}
+          {isDone ? (
+            <CollapsibleStep title="Global CV assessment" defaultOpen={false}>
+              <GlobalAssessmentView
+                assessment={assessment}
+                confirmations={confirmations}
+                onUpdateConfirmation={updateConfirmation}
+              />
+            </CollapsibleStep>
+          ) : (
+            <GlobalAssessmentView
+              assessment={assessment}
+              confirmations={confirmations}
+              onUpdateConfirmation={updateConfirmation}
+            />
+          )}
 
-      {showResult && (
-        <SectionRewriteResult
-          rewrites={rewrites}
-          coverLetter={coverLetter}
-          onReset={reset}
-        />
+          {isDone ? (
+            <CollapsibleStep title="Options and sections" defaultOpen={false}>
+              <ConfirmAndGenerateForm
+                sections={sections}
+                selectedSectionIds={selectedSectionIds}
+                onToggleSection={toggleSection}
+                additionalContext={additionalContext}
+                onAdditionalContextChange={setAdditionalContext}
+                generateCoverLetter={generateCoverLetter}
+                onGenerateCoverLetterChange={setGenerateCoverLetter}
+                coverLetterNotes={coverLetterNotes}
+                onCoverLetterNotesChange={setCoverLetterNotes}
+                hasUnansweredConfirmations={hasUnansweredConfirmations}
+                onGenerate={generateRewrites}
+                isLoading={false}
+              />
+            </CollapsibleStep>
+          ) : (
+            <ConfirmAndGenerateForm
+              sections={sections}
+              selectedSectionIds={selectedSectionIds}
+              onToggleSection={toggleSection}
+              additionalContext={additionalContext}
+              onAdditionalContextChange={setAdditionalContext}
+              generateCoverLetter={generateCoverLetter}
+              onGenerateCoverLetterChange={setGenerateCoverLetter}
+              coverLetterNotes={coverLetterNotes}
+              onCoverLetterNotesChange={setCoverLetterNotes}
+              hasUnansweredConfirmations={hasUnansweredConfirmations}
+              onGenerate={generateRewrites}
+              isLoading={status === "generating"}
+            />
+          )}
+
+          <StatusMessage status={status} error={null} />
+
+          {isDone && (
+            <SectionRewriteResult
+              rewrites={rewrites}
+              coverLetter={coverLetter}
+              onReset={reset}
+            />
+          )}
+        </>
       )}
     </div>
   );
