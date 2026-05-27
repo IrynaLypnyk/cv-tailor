@@ -1,19 +1,14 @@
 import OpenAI from "openai";
-import type { CVSection } from "./types";
+import type { CVSection, TailoringInsight } from "./types";
 import {
   SYSTEM_PROMPT,
   buildUserMessage,
-} from "./prompts/tailor-selected-sections.prompt";
-
-interface TailoredSectionResult {
-  id: string;
-  tailoredText: string;
-}
+} from "./prompts/analyse-and-tailor-sections.prompt";
 
 async function callOpenAI(
   sections: CVSection[],
   jobDescription: string
-): Promise<CVSection[]> {
+): Promise<TailoringInsight[]> {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL ?? "gpt-4o";
 
@@ -42,25 +37,18 @@ async function callOpenAI(
   if (
     typeof parsed !== "object" ||
     parsed === null ||
-    !Array.isArray((parsed as Record<string, unknown>).sections)
+    !Array.isArray((parsed as Record<string, unknown>).insights)
   ) {
-    throw new Error("Unexpected response shape from OpenAI: missing sections array");
+    throw new Error("Unexpected response shape from OpenAI: missing insights array");
   }
 
-  const results = (parsed as { sections: TailoredSectionResult[] }).sections;
-
-  const tailoredById = new Map(results.map((r) => [r.id, r.tailoredText]));
-
-  return sections.map((section) => ({
-    ...section,
-    tailoredText: tailoredById.get(section.id) ?? section.originalText,
-  }));
+  return (parsed as { insights: TailoringInsight[] }).insights;
 }
 
 export async function tailorSelectedSections(
   sections: CVSection[],
   jobDescription: string
-): Promise<CVSection[]> {
+): Promise<TailoringInsight[]> {
   const provider = process.env.LLM_PROVIDER ?? "openai";
 
   switch (provider) {
