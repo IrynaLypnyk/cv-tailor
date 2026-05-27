@@ -16,3 +16,16 @@ export interface CVSection {
   relevanceReason?: string;
   tailoredText?: string;
 }
+
+export interface TailoringInsight {
+  sectionId: string;
+  title: string;
+  originalText: string;
+  relevanceScore: 1 | 2 | 3 | 4 | 5;
+  relevanceReason: string;
+  suggestedStrategy: string;
+  keyJDMatches: string[];
+  missingOrWeakSignals: string[];
+  suggestedRewrites: string[];
+  finalSuggestedText?: string;
+}
