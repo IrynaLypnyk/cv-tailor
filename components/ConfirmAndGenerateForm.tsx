@@ -130,16 +130,16 @@ export function ConfirmAndGenerateForm({
               htmlFor="cover-letter-notes"
               className="text-sm font-medium text-foreground"
             >
-              Cover letter notes{" "}
+              Cover letter notes / company context{" "}
               <span className="font-normal text-zinc-500">(optional)</span>
             </label>
             <p className="text-xs text-zinc-500">
-              Add tone, motivation, company interest, or any points you want reflected in the cover letter.
+              Add anything you want reflected in the cover letter: company name, why you are interested, tone, location/right-to-work details, or specific motivation.
             </p>
             <textarea
               id="cover-letter-notes"
               rows={4}
-              placeholder='e.g. "Mention I am based in the UK with right to work." or "Make the tone warm but professional."'
+              placeholder='e.g. "I am applying to Acme because I care about healthcare tech." or "Mention I am based in the UK with right to work."'
               value={coverLetterNotes}
               disabled={isLoading}
               onChange={(e) => onCoverLetterNotesChange(e.target.value)}
