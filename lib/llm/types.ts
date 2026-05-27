@@ -19,6 +19,7 @@ export interface CVSection {
 export interface SuggestedEdit {
   text: string;
   evidenceLevel: "supported" | "partially_supported" | "requires_verification";
+  actionability: "safe_to_use" | "verify_first" | "do_not_claim";
   reason: string;
 }
 
@@ -32,6 +33,9 @@ export interface TailoringInsight {
   keyJDMatches: string[];
   stronglyDemonstrated: string[];
   underEmphasized: string[];
+  adjacentEvidence: string[];
+  actionableImprovements: string[];
+  nonActionableGaps: string[];
   trulyMissing: string[];
   suggestedEdits: SuggestedEdit[];
   finalSuggestedText?: string;

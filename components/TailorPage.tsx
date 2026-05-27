@@ -25,7 +25,7 @@ export function TailorPage() {
   return (
     <div
       data-component="TailorPage"
-      className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 py-12 sm:px-6"
+      className="mx-auto flex w-full max-w-[1024px] flex-col gap-10 px-4 py-12 sm:px-6"
     >
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
