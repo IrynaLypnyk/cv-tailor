@@ -25,8 +25,8 @@ function RelevanceDots({ score }: { score: TailoringInsight["relevanceScore"] })
 
 const EVIDENCE_LABELS: Record<SuggestedEdit["evidenceLevel"], string> = {
   supported: "Supported",
-  partially_supported: "Partially supported",
-  requires_verification: "Verify with user",
+  partially_supported: "Partial",
+  requires_verification: "Unverified",
 };
 
 const EVIDENCE_STYLES: Record<SuggestedEdit["evidenceLevel"], string> = {
@@ -37,10 +37,32 @@ const EVIDENCE_STYLES: Record<SuggestedEdit["evidenceLevel"], string> = {
 
 function EvidenceBadge({ level }: { level: SuggestedEdit["evidenceLevel"] }) {
   return (
-    <span
-      className={`shrink-0 rounded border px-1.5 py-0.5 text-xs font-medium ${EVIDENCE_STYLES[level]}`}
-    >
+    <span className={`shrink-0 rounded border px-1.5 py-0.5 text-xs font-medium ${EVIDENCE_STYLES[level]}`}>
       {EVIDENCE_LABELS[level]}
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Actionability badge
+// ---------------------------------------------------------------------------
+
+const ACTIONABILITY_LABELS: Record<SuggestedEdit["actionability"], string> = {
+  safe_to_use: "Safe to use",
+  verify_first: "Verify first",
+  do_not_claim: "Do not claim",
+};
+
+const ACTIONABILITY_STYLES: Record<SuggestedEdit["actionability"], string> = {
+  safe_to_use: "border-zinc-200 bg-zinc-50 text-zinc-600",
+  verify_first: "border-amber-200 bg-amber-50 text-amber-800",
+  do_not_claim: "border-red-200 bg-red-50 text-red-700",
+};
+
+function ActionabilityBadge({ level }: { level: SuggestedEdit["actionability"] }) {
+  return (
+    <span className={`shrink-0 rounded border px-1.5 py-0.5 text-xs font-medium ${ACTIONABILITY_STYLES[level]}`}>
+      {ACTIONABILITY_LABELS[level]}
     </span>
   );
 }
@@ -67,7 +89,7 @@ function InsightSection({
 }
 
 // ---------------------------------------------------------------------------
-// Signal group: a simple pill list (used for the three classification groups)
+// Pill list — neutral chips for strongly demonstrated / JD matches
 // ---------------------------------------------------------------------------
 
 function SignalPillList({ items }: { items: string[] }) {
@@ -87,6 +109,29 @@ function SignalPillList({ items }: { items: string[] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Tinted text list — for under-emphasis, gaps, etc.
+// ---------------------------------------------------------------------------
+
+function TintedList({
+  items,
+  colorClass,
+}: {
+  items: string[];
+  colorClass: string;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <ul className={`flex flex-col gap-1.5 rounded-md border px-4 py-3 ${colorClass}`}>
+      {items.map((item, i) => (
+        <li key={i} className="text-sm leading-6">
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main insight card
 // ---------------------------------------------------------------------------
 
@@ -95,9 +140,14 @@ interface SectionInsightCardProps {
 }
 
 export function SectionInsightCard({ insight }: SectionInsightCardProps) {
-  const hasSignals =
+  const hasEvidenceAnalysis =
     insight.stronglyDemonstrated.length > 0 ||
     insight.underEmphasized.length > 0 ||
+    insight.adjacentEvidence.length > 0;
+
+  const hasImprovementGuidance =
+    insight.actionableImprovements.length > 0 ||
+    insight.nonActionableGaps.length > 0 ||
     insight.trulyMissing.length > 0;
 
   return (
@@ -141,9 +191,13 @@ export function SectionInsightCard({ insight }: SectionInsightCardProps) {
         </InsightSection>
       )}
 
-      {/* Three signal groups */}
-      {hasSignals && (
-        <div className="flex flex-col gap-4">
+      {/* Evidence analysis */}
+      {hasEvidenceAnalysis && (
+        <div className="flex flex-col gap-4 rounded-md border border-zinc-100 bg-zinc-50 px-4 py-4">
+          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+            Evidence analysis
+          </span>
+
           {insight.stronglyDemonstrated.length > 0 && (
             <InsightSection label="Strongly demonstrated">
               <SignalPillList items={insight.stronglyDemonstrated} />
@@ -152,25 +206,55 @@ export function SectionInsightCard({ insight }: SectionInsightCardProps) {
 
           {insight.underEmphasized.length > 0 && (
             <InsightSection label="Present but under-emphasized">
-              <ul className="flex flex-col gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
-                {insight.underEmphasized.map((item, i) => (
-                  <li key={i} className="text-sm leading-6 text-amber-900">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <TintedList
+                items={insight.underEmphasized}
+                colorClass="border-amber-200 bg-amber-50 text-amber-900"
+              />
+            </InsightSection>
+          )}
+
+          {insight.adjacentEvidence.length > 0 && (
+            <InsightSection label="Adjacent evidence">
+              <TintedList
+                items={insight.adjacentEvidence}
+                colorClass="border-blue-200 bg-blue-50 text-blue-900"
+              />
+            </InsightSection>
+          )}
+        </div>
+      )}
+
+      {/* Improvement guidance */}
+      {hasImprovementGuidance && (
+        <div className="flex flex-col gap-4 rounded-md border border-zinc-100 bg-zinc-50 px-4 py-4">
+          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+            Improvement guidance
+          </span>
+
+          {insight.actionableImprovements.length > 0 && (
+            <InsightSection label="Actionable improvements">
+              <TintedList
+                items={insight.actionableImprovements}
+                colorClass="border-zinc-200 bg-white text-foreground"
+              />
+            </InsightSection>
+          )}
+
+          {insight.nonActionableGaps.length > 0 && (
+            <InsightSection label="Non-actionable gaps">
+              <TintedList
+                items={insight.nonActionableGaps}
+                colorClass="border-zinc-200 bg-white text-zinc-500"
+              />
             </InsightSection>
           )}
 
           {insight.trulyMissing.length > 0 && (
-            <InsightSection label="Truly missing">
-              <ul className="flex flex-col gap-1.5 rounded-md border border-red-200 bg-red-50 px-4 py-3">
-                {insight.trulyMissing.map((item, i) => (
-                  <li key={i} className="text-sm leading-6 text-red-800">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+            <InsightSection label="Do not claim unless true">
+              <TintedList
+                items={insight.trulyMissing}
+                colorClass="border-red-200 bg-red-50 text-red-800"
+              />
             </InsightSection>
           )}
         </div>
@@ -188,8 +272,9 @@ export function SectionInsightCard({ insight }: SectionInsightCardProps) {
                   </span>
                   <span className="text-sm leading-6 text-foreground">{edit.text}</span>
                 </div>
-                <div className="flex items-start gap-2 pl-5">
+                <div className="flex flex-wrap items-start gap-2 pl-5">
                   <EvidenceBadge level={edit.evidenceLevel} />
+                  <ActionabilityBadge level={edit.actionability} />
                   <span className="text-xs leading-5 text-zinc-500">{edit.reason}</span>
                 </div>
               </li>
