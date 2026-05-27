@@ -2,11 +2,24 @@
 
 import { useTailorCV } from "@/hooks/useTailorCV";
 import { CVUploadForm } from "./CVUploadForm";
-import { TailoredCVResult } from "./TailoredCVResult";
+import { CVSectionList } from "./CVSectionList";
+import { TailoredSectionsResult } from "./SectionBeforeAfter";
 import { StatusMessage } from "./StatusMessage";
 
 export function TailorPage() {
-  const { status, result, error, submit, reset } = useTailorCV();
+  const {
+    status,
+    sections,
+    error,
+    extractSections,
+    toggleSection,
+    tailorSelected,
+    reset,
+  } = useTailorCV();
+
+  const showForm = status === "idle" || status === "error";
+  const showSections = status === "sectionsReady" || status === "tailoring";
+  const showResult = status === "tailored";
 
   return (
     <div
@@ -18,20 +31,39 @@ export function TailorPage() {
           CV Tailor
         </h1>
         <p className="text-sm text-zinc-500">
-          Upload your CV and paste a job description to receive a tailored version
-          aligned to the role.
+          Upload your CV and a job description. Select which sections to tailor,
+          then review a before/after view for each one.
         </p>
       </header>
 
-      {status !== "success" && (
+      {showForm && (
         <>
-          <CVUploadForm onSubmit={submit} isLoading={status === "loading"} />
+          <CVUploadForm
+            onSubmit={extractSections}
+            isLoading={status === "extracting"}
+          />
           <StatusMessage status={status} error={error} />
         </>
       )}
 
-      {status === "success" && result && (
-        <TailoredCVResult result={result} onReset={reset} />
+      {status === "extracting" && (
+        <StatusMessage status={status} error={null} />
+      )}
+
+      {showSections && (
+        <>
+          <CVSectionList
+            sections={sections}
+            isLoading={status === "tailoring"}
+            onToggle={toggleSection}
+            onTailor={tailorSelected}
+          />
+          <StatusMessage status={status} error={null} />
+        </>
+      )}
+
+      {showResult && (
+        <TailoredSectionsResult sections={sections} onReset={reset} />
       )}
     </div>
   );

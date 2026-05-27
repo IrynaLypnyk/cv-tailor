@@ -5,13 +5,18 @@ interface StatusMessageProps {
   error?: string | null;
 }
 
+const LOADING_MESSAGES: Partial<Record<TailorStatus, string>> = {
+  extracting: "Detecting CV sections — this may take a moment...",
+  tailoring: "Tailoring selected sections — this may take a moment...",
+};
+
 export function StatusMessage({ status, error }: StatusMessageProps) {
+  const loadingMessage = LOADING_MESSAGES[status];
+
   return (
     <div data-component="StatusMessage" className="flex flex-col gap-3">
-      {status === "loading" && (
-        <p className="text-sm text-zinc-500">
-          Processing your CV — this may take a moment...
-        </p>
+      {loadingMessage && (
+        <p className="text-sm text-zinc-500">{loadingMessage}</p>
       )}
       {status === "error" && error && (
         <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
