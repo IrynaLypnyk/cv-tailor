@@ -117,13 +117,13 @@ Examples:
 
 Return valid JSON only with this shape:
 {
-  "sections": [
+  "rewrites": [
     {
-      "sectionId": "string",
-      "title": "string",
-      "before": "string",
-      "after": "string",
-      "note": "string"
+      "sectionId": "string — same id as the input section",
+      "title": "string — same title as the input section",
+      "originalText": "string — copy of the original section text",
+      "rewrittenText": "string — the complete rewritten section",
+      "notes": "string — short note explaining what influenced this rewrite, or omit"
     }
   ]
 }`;
@@ -134,14 +134,12 @@ export interface RewriteInput {
   underEmphasized: string[];
   confirmations: ConfirmationItem[];
   additionalContext: string;
-  generateCoverLetter: boolean;
-  coverLetterNotes: string;
 }
 
 const ANSWER_LABELS: Record<NonNullable<ConfirmationItem["answer"]>, string> = {
   have_it: "User confirmed: I have this experience",
   similar: "User confirmed: I have similar experience (do not name this skill directly)",
-  dont_have: "User confirmed: I do not have this (do not include in rewrite or cover letter)",
+  dont_have: "User confirmed: I do not have this (do not include in rewrite)",
 };
 
 export function buildUserMessage(input: RewriteInput): string {
@@ -166,16 +164,11 @@ export function buildUserMessage(input: RewriteInput): string {
     ? `Additional context provided by the user (treat as declared truth):\n${input.additionalContext.trim()}`
     : "No additional context provided.";
 
-  const coverLetterBlock = input.generateCoverLetter
-    ? `Generate a cover letter: YES\nCover letter notes: ${input.coverLetterNotes.trim() || "None provided."}`
-    : "Generate a cover letter: NO";
-
   return [
     `Here are the CV sections to rewrite:\n\n${sectionBlock}`,
     `---\n\nJob description:\n\n${input.jobDescription}`,
     `---\n\n${underEmphasizedBlock}`,
     `---\n\n${confirmationsBlock}`,
     `---\n\n${contextBlock}`,
-    `---\n\n${coverLetterBlock}`,
   ].join("\n\n");
 }
