@@ -41,12 +41,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const tailored = await tailorSelectedSections(
+    const insights = await tailorSelectedSections(
       sections as CVSection[],
       jobDescription.trim()
     );
 
-    return NextResponse.json({ sections: tailored });
+    return NextResponse.json({ insights });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "An unexpected error occurred.";
