@@ -16,6 +16,12 @@ export interface CVSection {
   relevanceReason?: string;
 }
 
+export interface SuggestedEdit {
+  text: string;
+  evidenceLevel: "supported" | "partially_supported" | "requires_verification";
+  reason: string;
+}
+
 export interface TailoringInsight {
   sectionId: string;
   title: string;
@@ -24,7 +30,9 @@ export interface TailoringInsight {
   relevanceReason: string;
   suggestedStrategy: string;
   keyJDMatches: string[];
-  missingOrWeakSignals: string[];
-  suggestedRewrites: string[];
+  stronglyDemonstrated: string[];
+  underEmphasized: string[];
+  trulyMissing: string[];
+  suggestedEdits: SuggestedEdit[];
   finalSuggestedText?: string;
 }
