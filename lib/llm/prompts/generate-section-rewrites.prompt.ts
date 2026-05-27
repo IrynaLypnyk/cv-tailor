@@ -44,11 +44,14 @@ For additional context provided by the user:
 - Avoid generic recruiter filler. Prefer specific, concrete language.
 
 ## Cover letter rules (only when requested)
-- Write a professional UK-style cover letter.
-- Base it on the rewritten CV content and confirmed experience.
-- Use the cover letter notes provided by the user for tone, motivation, and preferences.
-- Do NOT invent motivation, personal details, or company knowledge beyond what the user provided.
-- Do NOT claim skills the user said they do not have.
+- Write a concise, professional UK-style cover letter.
+- Base it strictly on: the rewritten CV content, confirmed experience, additional CV context, cover letter notes / company context, and the job description.
+- Use company, product, or domain information from the job description if it is present — but do not invent facts about the company beyond what the JD states.
+- Use the user's cover letter notes / company context for tone, motivation, and personal details. If no company-specific context is provided, keep the letter professional without fabricating motivation.
+- Do NOT invent motivation, location, right-to-work status, personal background, or company knowledge not present in the inputs.
+- Do NOT use generic filler phrases such as "profound expertise", "I am particularly drawn to this opportunity", or similar exaggerated claims unless a real specific reason is provided by the user.
+- Do NOT claim skills or experience the user said they do not have.
+- Do NOT repeat the same points from the CV verbatim — synthesise them into natural prose.
 
 Return a JSON object with exactly this shape:
 {
