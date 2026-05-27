@@ -6,12 +6,7 @@ import {
   type RewriteInput,
 } from "./prompts/generate-section-rewrites.prompt";
 
-interface RewriteResponse {
-  rewrites: SectionRewrite[];
-  coverLetter?: string;
-}
-
-async function callOpenAI(input: RewriteInput): Promise<RewriteResponse> {
+async function callOpenAI(input: RewriteInput): Promise<SectionRewrite[]> {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL ?? "gpt-4o";
 
@@ -42,12 +37,14 @@ async function callOpenAI(input: RewriteInput): Promise<RewriteResponse> {
     parsed === null ||
     !Array.isArray((parsed as Record<string, unknown>).rewrites)
   ) {
-    throw new Error("Unexpected response shape from OpenAI: missing rewrites array");
+    throw new Error(
+      "Unexpected response shape from OpenAI: missing rewrites array"
+    );
   }
 
   const data = parsed as Record<string, unknown>;
 
-  const rewrites = (data.rewrites as Array<Record<string, unknown>>).map(
+  return (data.rewrites as Array<Record<string, unknown>>).map(
     (r): SectionRewrite => ({
       sectionId: String(r.sectionId ?? ""),
       title: String(r.title ?? ""),
@@ -56,18 +53,11 @@ async function callOpenAI(input: RewriteInput): Promise<RewriteResponse> {
       notes: r.notes ? String(r.notes) : undefined,
     })
   );
-
-  const coverLetter =
-    input.generateCoverLetter && typeof data.coverLetter === "string"
-      ? data.coverLetter
-      : undefined;
-
-  return { rewrites, coverLetter };
 }
 
 export async function generateSectionRewrites(
   input: RewriteInput
-): Promise<RewriteResponse> {
+): Promise<SectionRewrite[]> {
   const provider = process.env.LLM_PROVIDER ?? "openai";
 
   switch (provider) {
