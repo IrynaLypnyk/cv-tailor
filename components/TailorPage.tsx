@@ -17,7 +17,7 @@ export function TailorPage() {
     reset,
   } = useTailorCV();
 
-  const showForm = status === "idle" || status === "error";
+  const showForm = status === "idle" || status === "extracting" || status === "error";
   const showSections = status === "sectionsReady" || status === "tailoring";
   const showResult = status === "tailored";
 
@@ -44,10 +44,6 @@ export function TailorPage() {
           />
           <StatusMessage status={status} error={error} />
         </>
-      )}
-
-      {status === "extracting" && (
-        <StatusMessage status={status} error={null} />
       )}
 
       {showSections && (
