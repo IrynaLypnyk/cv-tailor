@@ -1,8 +1,8 @@
-import type { TailoringInsight } from "@/lib/llm/types";
+import type { SuggestedEdit, TailoringInsight } from "@/lib/llm/types";
 
-interface SectionInsightCardProps {
-  insight: TailoringInsight;
-}
+// ---------------------------------------------------------------------------
+// Relevance dots
+// ---------------------------------------------------------------------------
 
 function RelevanceDots({ score }: { score: TailoringInsight["relevanceScore"] }) {
   return (
@@ -19,13 +19,93 @@ function RelevanceDots({ score }: { score: TailoringInsight["relevanceScore"] })
   );
 }
 
+// ---------------------------------------------------------------------------
+// Evidence level badge
+// ---------------------------------------------------------------------------
+
+const EVIDENCE_LABELS: Record<SuggestedEdit["evidenceLevel"], string> = {
+  supported: "Supported",
+  partially_supported: "Partially supported",
+  requires_verification: "Verify with user",
+};
+
+const EVIDENCE_STYLES: Record<SuggestedEdit["evidenceLevel"], string> = {
+  supported: "border-zinc-200 bg-zinc-50 text-zinc-600",
+  partially_supported: "border-amber-200 bg-amber-50 text-amber-800",
+  requires_verification: "border-red-200 bg-red-50 text-red-700",
+};
+
+function EvidenceBadge({ level }: { level: SuggestedEdit["evidenceLevel"] }) {
+  return (
+    <span
+      className={`shrink-0 rounded border px-1.5 py-0.5 text-xs font-medium ${EVIDENCE_STYLES[level]}`}
+    >
+      {EVIDENCE_LABELS[level]}
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Generic labelled section within the card
+// ---------------------------------------------------------------------------
+
+function InsightSection({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Signal group: a simple pill list (used for the three classification groups)
+// ---------------------------------------------------------------------------
+
+function SignalPillList({ items }: { items: string[] }) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {items.map((item) => (
+        <li
+          key={item}
+          className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-foreground"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main insight card
+// ---------------------------------------------------------------------------
+
+interface SectionInsightCardProps {
+  insight: TailoringInsight;
+}
+
 export function SectionInsightCard({ insight }: SectionInsightCardProps) {
+  const hasSignals =
+    insight.stronglyDemonstrated.length > 0 ||
+    insight.underEmphasized.length > 0 ||
+    insight.trulyMissing.length > 0;
+
   return (
     <div
       data-component="SectionInsightCard"
       className="flex flex-col gap-5 rounded-md border border-zinc-200 px-5 py-5"
     >
-      {/* Header: title + relevance score */}
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-sm font-semibold text-foreground">{insight.title}</h3>
         <div className="flex shrink-0 items-center gap-2">
@@ -54,45 +134,64 @@ export function SectionInsightCard({ insight }: SectionInsightCardProps) {
         </InsightSection>
       </div>
 
-      {/* JD matches */}
+      {/* JD keyword matches */}
       {insight.keyJDMatches.length > 0 && (
         <InsightSection label="JD keyword matches">
-          <ul className="flex flex-wrap gap-2">
-            {insight.keyJDMatches.map((match) => (
-              <li
-                key={match}
-                className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-foreground"
-              >
-                {match}
-              </li>
-            ))}
-          </ul>
+          <SignalPillList items={insight.keyJDMatches} />
         </InsightSection>
       )}
 
-      {/* Missing / weak signals */}
-      {insight.missingOrWeakSignals.length > 0 && (
-        <InsightSection label="Weak or missing signals">
-          <ul className="flex flex-col gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
-            {insight.missingOrWeakSignals.map((signal, i) => (
-              <li key={i} className="text-sm leading-6 text-amber-900">
-                {signal}
-              </li>
-            ))}
-          </ul>
-        </InsightSection>
+      {/* Three signal groups */}
+      {hasSignals && (
+        <div className="flex flex-col gap-4">
+          {insight.stronglyDemonstrated.length > 0 && (
+            <InsightSection label="Strongly demonstrated">
+              <SignalPillList items={insight.stronglyDemonstrated} />
+            </InsightSection>
+          )}
+
+          {insight.underEmphasized.length > 0 && (
+            <InsightSection label="Present but under-emphasized">
+              <ul className="flex flex-col gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+                {insight.underEmphasized.map((item, i) => (
+                  <li key={i} className="text-sm leading-6 text-amber-900">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </InsightSection>
+          )}
+
+          {insight.trulyMissing.length > 0 && (
+            <InsightSection label="Truly missing">
+              <ul className="flex flex-col gap-1.5 rounded-md border border-red-200 bg-red-50 px-4 py-3">
+                {insight.trulyMissing.map((item, i) => (
+                  <li key={i} className="text-sm leading-6 text-red-800">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </InsightSection>
+          )}
+        </div>
       )}
 
-      {/* Suggested rewrites */}
-      {insight.suggestedRewrites.length > 0 && (
-        <InsightSection label="Suggested rewrites">
-          <ul className="flex flex-col gap-3">
-            {insight.suggestedRewrites.map((rewrite, i) => (
-              <li key={i} className="flex gap-3 text-sm leading-6 text-foreground">
-                <span className="mt-0.5 shrink-0 text-zinc-400" aria-hidden>
-                  &ndash;
-                </span>
-                <span>{rewrite}</span>
+      {/* Suggested edits */}
+      {insight.suggestedEdits.length > 0 && (
+        <InsightSection label="Suggested edits">
+          <ul className="flex flex-col gap-4">
+            {insight.suggestedEdits.map((edit, i) => (
+              <li key={i} className="flex flex-col gap-1.5">
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 shrink-0 text-zinc-400" aria-hidden>
+                    &ndash;
+                  </span>
+                  <span className="text-sm leading-6 text-foreground">{edit.text}</span>
+                </div>
+                <div className="flex items-start gap-2 pl-5">
+                  <EvidenceBadge level={edit.evidenceLevel} />
+                  <span className="text-xs leading-5 text-zinc-500">{edit.reason}</span>
+                </div>
               </li>
             ))}
           </ul>
@@ -111,22 +210,9 @@ export function SectionInsightCard({ insight }: SectionInsightCardProps) {
   );
 }
 
-function InsightSection({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-        {label}
-      </span>
-      {children}
-    </div>
-  );
-}
+// ---------------------------------------------------------------------------
+// Page-level result wrapper
+// ---------------------------------------------------------------------------
 
 interface TailoredSectionsResultProps {
   insights: TailoringInsight[];
