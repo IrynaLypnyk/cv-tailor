@@ -42,6 +42,16 @@ export interface GlobalAssessment {
   recommendedSectionIds: string[];
 }
 
+export interface CoverLetterContext {
+  roleTitle?: string;
+  hiringCompanyName?: string;
+  visibleCompanyIsRecruiter?: boolean;
+  motivation?: string;
+  locationRightToWork?: string;
+  doNotMention?: string;
+  additionalNotes?: string;
+}
+
 export interface SectionRewrite {
   sectionId: string;
   title: string;

@@ -1,4 +1,9 @@
-import type { ConfirmationItem, EvidenceSource, SectionRewrite } from "../types";
+import type {
+  ConfirmationItem,
+  CoverLetterContext,
+  EvidenceSource,
+  SectionRewrite,
+} from "../types";
 
 export const COVER_LETTER_SYSTEM_PROMPT = `You are an expert UK cover letter writer for tech roles.
 
@@ -19,24 +24,43 @@ The cover letter must be credible in an interview.
 
 Do not make the candidate sound more experienced, senior, specialised, or company-specific than the evidence supports.
 
-## Company and recipient rules
+## Structured context rules
 
-- Do not invent company facts.
+The user may provide structured cover letter context. Follow these rules strictly:
+
+### Role title
+- If roleTitle is provided, use it as the role title in the opening paragraph.
+- If not provided, infer from the job description title.
+
+### Company name
+- If hiringCompanyName is provided, use it as the employer name.
+- If hiringCompanyName is not provided, check the job description for a clear hiring company name.
+- Do not assume the company listed is the hiring company if it appears to be a recruiter, agency, job board, or staffing firm.
+- If visibleCompanyIsRecruiter is true, do not name that company as the employer under any circumstances.
+- If the hiring company is unclear and not provided, use neutral wording: "this role", "this opportunity", or "the team".
+
+### Motivation
+- If motivation is provided, use it as the basis for expressing interest.
+- If motivation is not provided, do not invent company-specific motivation.
+- Keep motivation grounded and general if no specific reason is given.
+
+### Location / right-to-work
+- Only include location or right-to-work details if locationRightToWork is provided.
+- Do not invent or assume the candidate's location or work eligibility.
+
+### Do not mention
+- If doNotMention is provided, strictly exclude those topics, tools, companies, or claims.
+- This overrides any other instruction.
+
+### Additional notes
+- Use additionalNotes for tone, preferences, and any other guidance.
+
+## General company rules
+
+- Do not invent company facts, achievements, team structure, or product details.
 - Do not invent motivation.
-- Do not invent location, right-to-work status, personal background, or achievements.
-- Do not assume that a recruiter, recruitment agency, job board, staffing company, or legal footer is the hiring company.
-- If the actual hiring company is unclear, do not name the company as the employer.
-- If the JD appears to be posted by a recruiter or agency, use neutral wording such as:
-  - "this role"
-  - "this opportunity"
-  - "your client’s team" only if recruiter/client context is clear
-- Only mention a company name if:
-  - it is clearly the hiring company in the JD, or
-  - the user explicitly provides it as the hiring company.
-- User-provided cover letter notes / company context override inferred company context from the JD.
-- Use company, product, or domain information only if it appears in the job description or user cover letter notes.
-- If no company-specific reason is provided, keep motivation general and professional.
-
+- Do not invent personal background.
+- Use company, product, or domain information only if it appears in the job description or user-provided context.
 ## Unsupported claims
 
 - Do not include unsupported tools, skills, domains, achievements, or responsibilities.
@@ -132,7 +156,7 @@ export interface CoverLetterInput {
   underEmphasized: string[];
   confirmations: ConfirmationItem[];
   additionalContext: string;
-  coverLetterNotes: string;
+  coverLetterContext: CoverLetterContext;
 }
 
 const STATUS_LABELS: Record<NonNullable<ConfirmationItem["status"]>, string> = {
@@ -190,9 +214,37 @@ export function buildCoverLetterUserMessage(input: CoverLetterInput): string {
     ? `Additional CV context (treat as declared truth):\n${input.additionalContext.trim()}`
     : "No additional context provided.";
 
-  const notesBlock = input.coverLetterNotes.trim()
-    ? `Cover letter notes / company context:\n${input.coverLetterNotes.trim()}`
-    : "No cover letter notes provided.";
+  const ctx = input.coverLetterContext;
+  const coverLetterContextLines: string[] = [];
+
+  if (ctx.roleTitle?.trim()) {
+    coverLetterContextLines.push(`Role title: ${ctx.roleTitle.trim()}`);
+  }
+  if (ctx.hiringCompanyName?.trim()) {
+    coverLetterContextLines.push(`Hiring company name: ${ctx.hiringCompanyName.trim()}`);
+  }
+  if (ctx.visibleCompanyIsRecruiter) {
+    coverLetterContextLines.push(
+      "Visible company is a recruiter/agency: true — do NOT name this company as the employer."
+    );
+  }
+  if (ctx.motivation?.trim()) {
+    coverLetterContextLines.push(`Candidate motivation: ${ctx.motivation.trim()}`);
+  }
+  if (ctx.locationRightToWork?.trim()) {
+    coverLetterContextLines.push(`Location / right-to-work: ${ctx.locationRightToWork.trim()}`);
+  }
+  if (ctx.doNotMention?.trim()) {
+    coverLetterContextLines.push(`Do NOT mention: ${ctx.doNotMention.trim()}`);
+  }
+  if (ctx.additionalNotes?.trim()) {
+    coverLetterContextLines.push(`Additional notes: ${ctx.additionalNotes.trim()}`);
+  }
+
+  const coverLetterContextBlock =
+    coverLetterContextLines.length > 0
+      ? `Cover letter context (follow strictly):\n${coverLetterContextLines.join("\n")}`
+      : "No cover letter context provided. Use neutral wording for company and motivation.";
 
   return [
     `Here are the rewritten CV sections to base the cover letter on:\n\n${rewritesBlock}`,
@@ -201,6 +253,6 @@ export function buildCoverLetterUserMessage(input: CoverLetterInput): string {
     `---\n\n${underEmphasizedBlock}`,
     `---\n\n${confirmationsBlock}`,
     `---\n\n${contextBlock}`,
-    `---\n\n${notesBlock}`,
+    `---\n\n${coverLetterContextBlock}`,
   ].join("\n\n");
 }

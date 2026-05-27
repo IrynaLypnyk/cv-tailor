@@ -5,6 +5,7 @@ import type {
   CVSection,
   ConfirmationItem,
   ConfirmationStatus,
+  CoverLetterContext,
   EvidenceSource,
   GlobalAssessment,
   SectionRewrite,
@@ -26,7 +27,7 @@ export interface TailorCVState {
   selectedSectionIds: string[];
   additionalContext: string;
   generateCoverLetter: boolean;
-  coverLetterNotes: string;
+  coverLetterContext: CoverLetterContext;
   rewrites: SectionRewrite[];
   coverLetter: string | undefined;
   jobDescription: string;
@@ -42,7 +43,7 @@ export interface TailorCVActions {
   toggleSection: (id: string) => void;
   setAdditionalContext: (text: string) => void;
   setGenerateCoverLetter: (value: boolean) => void;
-  setCoverLetterNotes: (text: string) => void;
+  setCoverLetterContext: (patch: Partial<CoverLetterContext>) => void;
   generateRewrites: () => Promise<void>;
   reset: () => void;
 }
@@ -62,7 +63,7 @@ const INITIAL_STATE: TailorCVState = {
   selectedSectionIds: [],
   additionalContext: "",
   generateCoverLetter: false,
-  coverLetterNotes: "",
+  coverLetterContext: {},
   rewrites: [],
   coverLetter: undefined,
   jobDescription: "",
@@ -77,7 +78,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
   const [selectedSectionIds, setSelectedSectionIds] = useState<string[]>(INITIAL_STATE.selectedSectionIds);
   const [additionalContext, setAdditionalContext] = useState(INITIAL_STATE.additionalContext);
   const [generateCoverLetter, setGenerateCoverLetter] = useState(INITIAL_STATE.generateCoverLetter);
-  const [coverLetterNotes, setCoverLetterNotes] = useState(INITIAL_STATE.coverLetterNotes);
+  const [coverLetterContext, setCoverLetterContextState] = useState<CoverLetterContext>(INITIAL_STATE.coverLetterContext);
   const [rewrites, setRewrites] = useState<SectionRewrite[]>(INITIAL_STATE.rewrites);
   const [coverLetter, setCoverLetter] = useState<string | undefined>(INITIAL_STATE.coverLetter);
   const [jobDescription, setJobDescription] = useState(INITIAL_STATE.jobDescription);
@@ -91,7 +92,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     setSelectedSectionIds([]);
     setAdditionalContext("");
     setGenerateCoverLetter(false);
-    setCoverLetterNotes("");
+    setCoverLetterContextState({});
     setRewrites([]);
     setCoverLetter(undefined);
     setError(null);
@@ -168,6 +169,10 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     );
   }
 
+  function setCoverLetterContext(patch: Partial<CoverLetterContext>) {
+    setCoverLetterContextState((prev) => ({ ...prev, ...patch }));
+  }
+
   function toggleSection(id: string) {
     setSelectedSectionIds((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
@@ -198,7 +203,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
           confirmations,
           additionalContext,
           generateCoverLetter,
-          coverLetterNotes,
+          coverLetterContext,
         }),
       });
 
@@ -238,7 +243,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     setSelectedSectionIds(INITIAL_STATE.selectedSectionIds);
     setAdditionalContext(INITIAL_STATE.additionalContext);
     setGenerateCoverLetter(INITIAL_STATE.generateCoverLetter);
-    setCoverLetterNotes(INITIAL_STATE.coverLetterNotes);
+    setCoverLetterContextState(INITIAL_STATE.coverLetterContext);
     setRewrites(INITIAL_STATE.rewrites);
     setCoverLetter(INITIAL_STATE.coverLetter);
     setJobDescription(INITIAL_STATE.jobDescription);
@@ -253,7 +258,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     selectedSectionIds,
     additionalContext,
     generateCoverLetter,
-    coverLetterNotes,
+    coverLetterContext,
     rewrites,
     coverLetter,
     jobDescription,
@@ -263,7 +268,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     toggleSection,
     setAdditionalContext,
     setGenerateCoverLetter,
-    setCoverLetterNotes,
+    setCoverLetterContext,
     generateRewrites,
     reset,
   };

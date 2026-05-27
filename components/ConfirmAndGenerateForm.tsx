@@ -1,6 +1,6 @@
 "use client";
 
-import type { CVSection } from "@/lib/llm/types";
+import type { CVSection, CoverLetterContext } from "@/lib/llm/types";
 
 interface ConfirmAndGenerateFormProps {
   sections: CVSection[];
@@ -10,8 +10,8 @@ interface ConfirmAndGenerateFormProps {
   onAdditionalContextChange: (text: string) => void;
   generateCoverLetter: boolean;
   onGenerateCoverLetterChange: (value: boolean) => void;
-  coverLetterNotes: string;
-  onCoverLetterNotesChange: (text: string) => void;
+  coverLetterContext: CoverLetterContext;
+  onCoverLetterContextChange: (patch: Partial<CoverLetterContext>) => void;
   hasUnansweredConfirmations: boolean;
   onGenerate: () => void;
   isLoading: boolean;
@@ -25,8 +25,8 @@ export function ConfirmAndGenerateForm({
   onAdditionalContextChange,
   generateCoverLetter,
   onGenerateCoverLetterChange,
-  coverLetterNotes,
-  onCoverLetterNotesChange,
+  coverLetterContext,
+  onCoverLetterContextChange,
   hasUnansweredConfirmations,
   onGenerate,
   isLoading,
@@ -110,7 +110,7 @@ export function ConfirmAndGenerateForm({
       </div>
 
       {/* Cover letter */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <label className="flex cursor-pointer items-center gap-3">
           <input
             type="checkbox"
@@ -125,26 +125,147 @@ export function ConfirmAndGenerateForm({
         </label>
 
         {generateCoverLetter && (
-          <div className="flex flex-col gap-2 pl-7">
-            <label
-              htmlFor="cover-letter-notes"
-              className="text-sm font-medium text-foreground"
-            >
-              Cover letter notes / company context{" "}
-              <span className="font-normal text-zinc-500">(optional)</span>
-            </label>
-            <p className="text-xs text-zinc-500">
-              Add anything you want reflected in the cover letter: company name, why you are interested, tone, location/right-to-work details, or specific motivation.
+          <div className="flex flex-col gap-5 rounded-md border border-zinc-200 px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              Cover letter context
             </p>
-            <textarea
-              id="cover-letter-notes"
-              rows={4}
-              placeholder='e.g. "I am applying to Acme because I care about healthcare tech." or "Mention I am based in the UK with right to work."'
-              value={coverLetterNotes}
-              disabled={isLoading}
-              onChange={(e) => onCoverLetterNotesChange(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 bg-background px-4 py-3 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
-            />
+
+            {/* Role title */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="cl-role-title" className="text-sm font-medium text-foreground">
+                Role title{" "}
+                <span className="font-normal text-zinc-500">(optional)</span>
+              </label>
+              <input
+                id="cl-role-title"
+                type="text"
+                placeholder="React Developer"
+                value={coverLetterContext.roleTitle ?? ""}
+                disabled={isLoading}
+                onChange={(e) =>
+                  onCoverLetterContextChange({ roleTitle: e.target.value || undefined })
+                }
+                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+
+            {/* Hiring company name */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="cl-company-name" className="text-sm font-medium text-foreground">
+                Hiring company name{" "}
+                <span className="font-normal text-zinc-500">(optional)</span>
+              </label>
+              <input
+                id="cl-company-name"
+                type="text"
+                placeholder="Leave empty if the hiring company is unknown"
+                value={coverLetterContext.hiringCompanyName ?? ""}
+                disabled={isLoading}
+                onChange={(e) =>
+                  onCoverLetterContextChange({ hiringCompanyName: e.target.value || undefined })
+                }
+                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+
+            {/* Recruiter / agency checkbox */}
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={coverLetterContext.visibleCompanyIsRecruiter ?? false}
+                disabled={isLoading}
+                onChange={(e) =>
+                  onCoverLetterContextChange({
+                    visibleCompanyIsRecruiter: e.target.checked || undefined,
+                  })
+                }
+                className="mt-0.5 h-4 w-4 shrink-0 accent-foreground disabled:cursor-not-allowed"
+              />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-medium text-foreground">
+                  The visible company appears to be a recruiter or agency, not the hiring company
+                </span>
+                <span className="text-xs text-zinc-500">
+                  If selected, the cover letter will not refer to that company as the employer.
+                </span>
+              </div>
+            </label>
+
+            {/* Motivation */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="cl-motivation" className="text-sm font-medium text-foreground">
+                Why are you interested?{" "}
+                <span className="font-normal text-zinc-500">(optional)</span>
+              </label>
+              <textarea
+                id="cl-motivation"
+                rows={3}
+                placeholder="Example: I'm interested in this role because it combines React, product engineering, and AI-enabled features."
+                value={coverLetterContext.motivation ?? ""}
+                disabled={isLoading}
+                onChange={(e) =>
+                  onCoverLetterContextChange({ motivation: e.target.value || undefined })
+                }
+                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+
+            {/* Location / right to work */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="cl-location" className="text-sm font-medium text-foreground">
+                Location or right-to-work note{" "}
+                <span className="font-normal text-zinc-500">(optional)</span>
+              </label>
+              <input
+                id="cl-location"
+                type="text"
+                placeholder="Example: I am currently based in the UK with full right to work."
+                value={coverLetterContext.locationRightToWork ?? ""}
+                disabled={isLoading}
+                onChange={(e) =>
+                  onCoverLetterContextChange({ locationRightToWork: e.target.value || undefined })
+                }
+                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+
+            {/* Do not mention */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="cl-do-not-mention" className="text-sm font-medium text-foreground">
+                Do not mention{" "}
+                <span className="font-normal text-zinc-500">(optional)</span>
+              </label>
+              <textarea
+                id="cl-do-not-mention"
+                rows={2}
+                placeholder="Example: Do not mention Azure. Do not mention Huxley as the employer."
+                value={coverLetterContext.doNotMention ?? ""}
+                disabled={isLoading}
+                onChange={(e) =>
+                  onCoverLetterContextChange({ doNotMention: e.target.value || undefined })
+                }
+                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+
+            {/* Additional notes */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="cl-additional-notes" className="text-sm font-medium text-foreground">
+                Additional cover letter notes{" "}
+                <span className="font-normal text-zinc-500">(optional)</span>
+              </label>
+              <textarea
+                id="cl-additional-notes"
+                rows={3}
+                placeholder='e.g. "Make the tone warm but professional." or "Mention I am looking for a senior IC role, not management."'
+                value={coverLetterContext.additionalNotes ?? ""}
+                disabled={isLoading}
+                onChange={(e) =>
+                  onCoverLetterContextChange({ additionalNotes: e.target.value || undefined })
+                }
+                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
           </div>
         )}
       </div>

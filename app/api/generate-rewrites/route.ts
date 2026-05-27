@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSectionRewrites } from "@/lib/llm/generate-section-rewrites";
 import { generateCoverLetter as generateCoverLetterText } from "@/lib/llm/generate-cover-letter";
-import type { ConfirmationItem, CVSection } from "@/lib/llm/types";
+import type { ConfirmationItem, CoverLetterContext, CVSection } from "@/lib/llm/types";
 
 interface RequestBody {
   sections: Pick<CVSection, "id" | "title" | "originalText">[];
@@ -11,7 +11,7 @@ interface RequestBody {
   confirmations: ConfirmationItem[];
   additionalContext: string;
   generateCoverLetter: boolean;
-  coverLetterNotes: string;
+  coverLetterContext: CoverLetterContext;
 }
 
 export async function POST(req: NextRequest) {
@@ -75,8 +75,10 @@ export async function POST(req: NextRequest) {
       typeof data.generateCoverLetter === "boolean"
         ? data.generateCoverLetter
         : false,
-    coverLetterNotes:
-      typeof data.coverLetterNotes === "string" ? data.coverLetterNotes : "",
+    coverLetterContext:
+      typeof data.coverLetterContext === "object" && data.coverLetterContext !== null
+        ? (data.coverLetterContext as CoverLetterContext)
+        : {},
   };
 
   try {
@@ -102,7 +104,7 @@ export async function POST(req: NextRequest) {
       underEmphasized: input.underEmphasized,
       confirmations: input.confirmations,
       additionalContext: input.additionalContext,
-      coverLetterNotes: input.coverLetterNotes,
+      coverLetterContext: input.coverLetterContext,
     });
 
     return NextResponse.json({ rewrites, coverLetter });

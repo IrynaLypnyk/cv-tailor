@@ -53,7 +53,7 @@ export function TailorPage() {
     selectedSectionIds,
     additionalContext,
     generateCoverLetter,
-    coverLetterNotes,
+    coverLetterContext,
     rewrites,
     coverLetter,
     error,
@@ -62,7 +62,7 @@ export function TailorPage() {
     toggleSection,
     setAdditionalContext,
     setGenerateCoverLetter,
-    setCoverLetterNotes,
+    setCoverLetterContext,
     generateRewrites,
     reset,
   } = useTailorCV();
@@ -132,8 +132,8 @@ export function TailorPage() {
                 onAdditionalContextChange={setAdditionalContext}
                 generateCoverLetter={generateCoverLetter}
                 onGenerateCoverLetterChange={setGenerateCoverLetter}
-                coverLetterNotes={coverLetterNotes}
-                onCoverLetterNotesChange={setCoverLetterNotes}
+                coverLetterContext={coverLetterContext}
+                onCoverLetterContextChange={setCoverLetterContext}
                 hasUnansweredConfirmations={hasUnansweredConfirmations}
                 onGenerate={generateRewrites}
                 isLoading={false}
@@ -148,8 +148,8 @@ export function TailorPage() {
               onAdditionalContextChange={setAdditionalContext}
               generateCoverLetter={generateCoverLetter}
               onGenerateCoverLetterChange={setGenerateCoverLetter}
-              coverLetterNotes={coverLetterNotes}
-              onCoverLetterNotesChange={setCoverLetterNotes}
+              coverLetterContext={coverLetterContext}
+              onCoverLetterContextChange={setCoverLetterContext}
               hasUnansweredConfirmations={hasUnansweredConfirmations}
               onGenerate={generateRewrites}
               isLoading={status === "generating"}
