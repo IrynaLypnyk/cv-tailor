@@ -16,11 +16,22 @@ export interface CVSection {
   relevanceReason?: string;
 }
 
+export type ConfirmationStatus = "direct" | "similar" | "none" | null;
+
+export type EvidenceSource =
+  | "production"
+  | "freelance"
+  | "personal_project"
+  | "coursework"
+  | "basic_exposure";
+
 export interface ConfirmationItem {
   id: string;
   skill: string;
   context: string;
-  answer: "have_it" | "similar" | "dont_have" | null;
+  status: ConfirmationStatus;
+  evidenceSource?: EvidenceSource;
+  evidenceNote?: string;
 }
 
 export interface GlobalAssessment {
