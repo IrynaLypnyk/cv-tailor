@@ -16,6 +16,38 @@ export interface CVSection {
   relevanceReason?: string;
 }
 
+// ---------------------------------------------------------------------------
+// New types — global assessment guided tailoring flow
+// ---------------------------------------------------------------------------
+
+export interface ConfirmationItem {
+  id: string;
+  skill: string;
+  context: string;
+  answer: "have_it" | "similar" | "dont_have" | null;
+}
+
+export interface GlobalAssessment {
+  strongMatches: string[];
+  underEmphasized: string[];
+  needsConfirmation: ConfirmationItem[];
+  nonActionableGaps: string[];
+  recommendedSectionIds: string[];
+}
+
+export interface SectionRewrite {
+  sectionId: string;
+  title: string;
+  originalText: string;
+  rewrittenText: string;
+  notes?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Legacy types — kept until cleanup step
+// ---------------------------------------------------------------------------
+
+/** @deprecated */
 export interface SuggestedEdit {
   text: string;
   evidenceLevel: "supported" | "partially_supported" | "requires_verification";
@@ -24,6 +56,7 @@ export interface SuggestedEdit {
   suggestedReplacement?: string;
 }
 
+/** @deprecated */
 export interface TailoringInsight {
   sectionId: string;
   title: string;
