@@ -34,6 +34,14 @@ For each section:
   - "verify_first": user should verify this edit accurately reflects their experience before using it
   - "do_not_claim": edit must not be used unless the user can confirm the claim is true
 
+- For each suggested edit, also populate suggestedReplacement when possible:
+  - Write a concrete replacement sentence or bullet the user can copy directly into their CV.
+  - Only include suggestedReplacement when evidenceLevel is "supported" or "partially_supported" and a replacement can be derived from the original CV text.
+  - Do NOT include suggestedReplacement for "do_not_claim" edits or for edits that require the user to verify unconfirmed facts.
+  - The replacement must be a ready-to-use sentence or bullet, not a meta-instruction like "Emphasise your TypeScript experience".
+  - Example of bad suggestedReplacement: "Emphasise the TypeScript migration work."
+  - Example of good suggestedReplacement: "Led a full TypeScript migration of a legacy React codebase, improving type safety and reducing runtime errors across the product."
+
 - Do NOT produce a "safe_to_use" edit for something in trulyMissing or nonActionableGaps.
 - Do NOT invent technologies, companies, metrics, certifications, or responsibilities.
 - Do NOT paraphrase or reword for its own sake. Every edit must serve a specific editorial purpose.
@@ -69,7 +77,8 @@ Return a JSON object with exactly this shape:
           "text": "string — the suggested edit",
           "evidenceLevel": "supported" | "partially_supported" | "requires_verification",
           "actionability": "safe_to_use" | "verify_first" | "do_not_claim",
-          "reason": "string — why this edit is suggested and what CV evidence supports it"
+          "reason": "string — why this edit is suggested and what CV evidence supports it",
+          "suggestedReplacement": "string — concrete ready-to-use sentence or bullet, or omit if not applicable"
         }
       ],
       "finalSuggestedText": "string or omit if not needed"
