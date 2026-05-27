@@ -1,4 +1,4 @@
-import type { ConfirmationItem, CVSection } from "../types";
+import type { ConfirmationItem, CVSection, EvidenceSource } from "../types";
 
 export const SYSTEM_PROMPT = `You are an expert UK tech CV writer.
 
@@ -136,11 +136,33 @@ export interface RewriteInput {
   additionalContext: string;
 }
 
-const ANSWER_LABELS: Record<NonNullable<ConfirmationItem["answer"]>, string> = {
-  have_it: "User confirmed: I have this experience",
-  similar: "User confirmed: I have similar experience (do not name this skill directly)",
-  dont_have: "User confirmed: I do not have this (do not include in rewrite)",
+const STATUS_LABELS: Record<NonNullable<ConfirmationItem["status"]>, string> = {
+  direct: "User confirmed: I have direct experience",
+  similar: "User confirmed: I have related / similar experience (do not claim direct experience)",
+  none: "User confirmed: I do not have this (do not include in rewrite)",
 };
+
+const EVIDENCE_SOURCE_LABELS: Record<EvidenceSource, string> = {
+  production: "professional / production work",
+  freelance: "freelance / client project",
+  personal_project: "personal project / portfolio",
+  coursework: "coursework / training",
+  basic_exposure: "basic exposure only",
+};
+
+function formatConfirmation(c: ConfirmationItem): string {
+  const lines: string[] = [
+    `- ${c.skill}: ${STATUS_LABELS[c.status!]}`,
+    `  Context: ${c.context}`,
+  ];
+  if (c.evidenceSource) {
+    lines.push(`  Evidence level: ${EVIDENCE_SOURCE_LABELS[c.evidenceSource]}`);
+  }
+  if (c.evidenceNote?.trim()) {
+    lines.push(`  Evidence note: ${c.evidenceNote.trim()}`);
+  }
+  return lines.join("\n");
+}
 
 export function buildUserMessage(input: RewriteInput): string {
   const sectionBlock = input.sections
@@ -155,8 +177,8 @@ export function buildUserMessage(input: RewriteInput): string {
   const confirmationsBlock =
     input.confirmations.length > 0
       ? `User confirmations for uncertain requirements:\n${input.confirmations
-          .filter((c) => c.answer !== null)
-          .map((c) => `- ${c.skill}: ${ANSWER_LABELS[c.answer!]}\n  Context: ${c.context}`)
+          .filter((c) => c.status !== null)
+          .map(formatConfirmation)
           .join("\n")}`
       : "No uncertain requirements to confirm.";
 
