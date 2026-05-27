@@ -21,6 +21,7 @@ export interface SuggestedEdit {
   evidenceLevel: "supported" | "partially_supported" | "requires_verification";
   actionability: "safe_to_use" | "verify_first" | "do_not_claim";
   reason: string;
+  suggestedReplacement?: string;
 }
 
 export interface TailoringInsight {
