@@ -179,6 +179,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
         body: JSON.stringify({
           sections: selectedSections,
           jobDescription,
+          strongMatches: assessment.strongMatches,
           underEmphasized: assessment.underEmphasized,
           confirmations,
           additionalContext,

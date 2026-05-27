@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSectionRewrites } from "@/lib/llm/generate-section-rewrites";
+import { generateCoverLetter as generateCoverLetterText } from "@/lib/llm/generate-cover-letter";
 import type { ConfirmationItem, CVSection } from "@/lib/llm/types";
 
 interface RequestBody {
   sections: Pick<CVSection, "id" | "title" | "originalText">[];
   jobDescription: string;
+  strongMatches: string[];
   underEmphasized: string[];
   confirmations: ConfirmationItem[];
   additionalContext: string;
@@ -60,6 +62,9 @@ export async function POST(req: NextRequest) {
   const input: RequestBody = {
     sections: data.sections as RequestBody["sections"],
     jobDescription: data.jobDescription.trim(),
+    strongMatches: Array.isArray(data.strongMatches)
+      ? (data.strongMatches as string[])
+      : [],
     underEmphasized: Array.isArray(data.underEmphasized)
       ? (data.underEmphasized as string[])
       : [],
@@ -75,8 +80,32 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    const result = await generateSectionRewrites(input);
-    return NextResponse.json(result);
+    const rewrites = await generateSectionRewrites({
+      sections: input.sections,
+      jobDescription: input.jobDescription,
+      underEmphasized: input.underEmphasized,
+      confirmations: input.confirmations,
+      additionalContext: input.additionalContext,
+    });
+
+    if (!input.generateCoverLetter) {
+      return NextResponse.json({ rewrites });
+    }
+
+    const coverLetter = await generateCoverLetterText({
+      rewrites: rewrites.map(({ title, rewrittenText }) => ({
+        title,
+        rewrittenText,
+      })),
+      jobDescription: input.jobDescription,
+      strongMatches: input.strongMatches,
+      underEmphasized: input.underEmphasized,
+      confirmations: input.confirmations,
+      additionalContext: input.additionalContext,
+      coverLetterNotes: input.coverLetterNotes,
+    });
+
+    return NextResponse.json({ rewrites, coverLetter });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "An unexpected error occurred.";
