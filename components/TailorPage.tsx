@@ -10,6 +10,7 @@ export function TailorPage() {
   const {
     status,
     sections,
+    insights,
     error,
     extractSections,
     toggleSection,
@@ -31,8 +32,8 @@ export function TailorPage() {
           CV Tailor
         </h1>
         <p className="text-sm text-zinc-500">
-          Upload your CV and a job description. Select which sections to tailor,
-          then review a before/after view for each one.
+          Upload your CV and a job description. Select which sections to improve,
+          then review targeted editing suggestions for each one.
         </p>
       </header>
 
@@ -59,7 +60,7 @@ export function TailorPage() {
       )}
 
       {showResult && (
-        <TailoredSectionsResult sections={sections} onReset={reset} />
+        <TailoredSectionsResult insights={insights} onReset={reset} />
       )}
     </div>
   );
