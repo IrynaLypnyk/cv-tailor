@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { SuggestedEdit, TailoringInsight } from "@/lib/llm/types";
 
 // ---------------------------------------------------------------------------
@@ -20,31 +23,7 @@ function RelevanceDots({ score }: { score: TailoringInsight["relevanceScore"] })
 }
 
 // ---------------------------------------------------------------------------
-// Evidence level badge
-// ---------------------------------------------------------------------------
-
-const EVIDENCE_LABELS: Record<SuggestedEdit["evidenceLevel"], string> = {
-  supported: "Supported",
-  partially_supported: "Partial",
-  requires_verification: "Unverified",
-};
-
-const EVIDENCE_STYLES: Record<SuggestedEdit["evidenceLevel"], string> = {
-  supported: "border-zinc-200 bg-zinc-50 text-zinc-600",
-  partially_supported: "border-amber-200 bg-amber-50 text-amber-800",
-  requires_verification: "border-red-200 bg-red-50 text-red-700",
-};
-
-function EvidenceBadge({ level }: { level: SuggestedEdit["evidenceLevel"] }) {
-  return (
-    <span className={`shrink-0 rounded border px-1.5 py-0.5 text-xs font-medium ${EVIDENCE_STYLES[level]}`}>
-      {EVIDENCE_LABELS[level]}
-    </span>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Actionability badge
+// Actionability badge (shown on each suggested edit)
 // ---------------------------------------------------------------------------
 
 const ACTIONABILITY_LABELS: Record<SuggestedEdit["actionability"], string> = {
@@ -68,7 +47,7 @@ function ActionabilityBadge({ level }: { level: SuggestedEdit["actionability"] }
 }
 
 // ---------------------------------------------------------------------------
-// Generic labelled section within the card
+// Generic labelled sub-section
 // ---------------------------------------------------------------------------
 
 function InsightSection({
@@ -89,7 +68,7 @@ function InsightSection({
 }
 
 // ---------------------------------------------------------------------------
-// Pill list — neutral chips for strongly demonstrated / JD matches
+// Pill list — for JD matches, strongly demonstrated
 // ---------------------------------------------------------------------------
 
 function SignalPillList({ items }: { items: string[] }) {
@@ -109,21 +88,21 @@ function SignalPillList({ items }: { items: string[] }) {
 }
 
 // ---------------------------------------------------------------------------
-// Tinted text list — for under-emphasis, gaps, etc.
+// Plain text list — for analysis groups
 // ---------------------------------------------------------------------------
 
-function TintedList({
+function PlainList({
   items,
-  colorClass,
+  className = "text-zinc-600",
 }: {
   items: string[];
-  colorClass: string;
+  className?: string;
 }) {
   if (items.length === 0) return null;
   return (
-    <ul className={`flex flex-col gap-1.5 rounded-md border px-4 py-3 ${colorClass}`}>
+    <ul className="flex flex-col gap-1">
       {items.map((item, i) => (
-        <li key={i} className="text-sm leading-6">
+        <li key={i} className={`text-sm leading-6 ${className}`}>
           {item}
         </li>
       ))}
@@ -140,22 +119,23 @@ interface SectionInsightCardProps {
 }
 
 export function SectionInsightCard({ insight }: SectionInsightCardProps) {
-  const hasEvidenceAnalysis =
+  const [showDetails, setShowDetails] = useState(false);
+
+  const hasDetails =
+    insight.keyJDMatches.length > 0 ||
     insight.stronglyDemonstrated.length > 0 ||
     insight.underEmphasized.length > 0 ||
-    insight.adjacentEvidence.length > 0;
-
-  const hasImprovementGuidance =
-    insight.actionableImprovements.length > 0 ||
+    insight.adjacentEvidence.length > 0 ||
     insight.nonActionableGaps.length > 0 ||
-    insight.trulyMissing.length > 0;
+    insight.trulyMissing.length > 0 ||
+    insight.suggestedStrategy.length > 0;
 
   return (
     <div
       data-component="SectionInsightCard"
       className="flex flex-col gap-5 rounded-md border border-zinc-200 px-5 py-5"
     >
-      {/* Header */}
+      {/* Header: title + relevance */}
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-sm font-semibold text-foreground">{insight.title}</h3>
         <div className="flex shrink-0 items-center gap-2">
@@ -167,113 +147,36 @@ export function SectionInsightCard({ insight }: SectionInsightCardProps) {
         </div>
       </div>
 
-      {/* Original text */}
-      <InsightSection label="Original">
-        <p className="whitespace-pre-wrap text-sm leading-6 text-zinc-500">
-          {insight.originalText}
-        </p>
-      </InsightSection>
+      {/* Why it matters — always visible */}
+      <p className="text-sm leading-6 text-zinc-600">{insight.relevanceReason}</p>
 
-      {/* Why it matters + strategy */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <InsightSection label="Why it matters">
-          <p className="text-sm leading-6 text-foreground">{insight.relevanceReason}</p>
-        </InsightSection>
-        <InsightSection label="Suggested strategy">
-          <p className="text-sm leading-6 text-foreground">{insight.suggestedStrategy}</p>
-        </InsightSection>
-      </div>
-
-      {/* JD keyword matches */}
-      {insight.keyJDMatches.length > 0 && (
-        <InsightSection label="JD keyword matches">
-          <SignalPillList items={insight.keyJDMatches} />
+      {/* Actionable improvements — always visible */}
+      {insight.actionableImprovements.length > 0 && (
+        <InsightSection label="Actionable improvements">
+          <PlainList items={insight.actionableImprovements} />
         </InsightSection>
       )}
 
-      {/* Evidence analysis */}
-      {hasEvidenceAnalysis && (
-        <div className="flex flex-col gap-4 rounded-md border border-zinc-100 bg-zinc-50 px-4 py-4">
-          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-            Evidence analysis
-          </span>
-
-          {insight.stronglyDemonstrated.length > 0 && (
-            <InsightSection label="Strongly demonstrated">
-              <SignalPillList items={insight.stronglyDemonstrated} />
-            </InsightSection>
-          )}
-
-          {insight.underEmphasized.length > 0 && (
-            <InsightSection label="Present but under-emphasized">
-              <TintedList
-                items={insight.underEmphasized}
-                colorClass="border-amber-200 bg-amber-50 text-amber-900"
-              />
-            </InsightSection>
-          )}
-
-          {insight.adjacentEvidence.length > 0 && (
-            <InsightSection label="Adjacent evidence">
-              <TintedList
-                items={insight.adjacentEvidence}
-                colorClass="border-blue-200 bg-blue-50 text-blue-900"
-              />
-            </InsightSection>
-          )}
-        </div>
-      )}
-
-      {/* Improvement guidance */}
-      {hasImprovementGuidance && (
-        <div className="flex flex-col gap-4 rounded-md border border-zinc-100 bg-zinc-50 px-4 py-4">
-          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-            Improvement guidance
-          </span>
-
-          {insight.actionableImprovements.length > 0 && (
-            <InsightSection label="Actionable improvements">
-              <TintedList
-                items={insight.actionableImprovements}
-                colorClass="border-zinc-200 bg-white text-foreground"
-              />
-            </InsightSection>
-          )}
-
-          {insight.nonActionableGaps.length > 0 && (
-            <InsightSection label="Non-actionable gaps">
-              <TintedList
-                items={insight.nonActionableGaps}
-                colorClass="border-zinc-200 bg-white text-zinc-500"
-              />
-            </InsightSection>
-          )}
-
-          {insight.trulyMissing.length > 0 && (
-            <InsightSection label="Do not claim unless true">
-              <TintedList
-                items={insight.trulyMissing}
-                colorClass="border-red-200 bg-red-50 text-red-800"
-              />
-            </InsightSection>
-          )}
-        </div>
-      )}
-
-      {/* Suggested edits */}
+      {/* Suggested edits — always visible, main practical section */}
       {insight.suggestedEdits.length > 0 && (
         <InsightSection label="Suggested edits">
-          <ul className="flex flex-col gap-4">
+          <ul className="flex flex-col gap-5">
             {insight.suggestedEdits.map((edit, i) => (
-              <li key={i} className="flex flex-col gap-1.5">
+              <li key={i} className="flex flex-col gap-2">
                 <div className="flex items-start gap-3">
                   <span className="mt-0.5 shrink-0 text-zinc-400" aria-hidden>
                     &ndash;
                   </span>
-                  <span className="text-sm leading-6 text-foreground">{edit.text}</span>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-sm leading-6 text-foreground">{edit.text}</span>
+                    {edit.suggestedReplacement && (
+                      <p className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm leading-6 text-foreground">
+                        {edit.suggestedReplacement}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="flex flex-wrap items-start gap-2 pl-5">
-                  <EvidenceBadge level={edit.evidenceLevel} />
+                <div className="flex flex-wrap items-center gap-2 pl-5">
                   <ActionabilityBadge level={edit.actionability} />
                   <span className="text-xs leading-5 text-zinc-500">{edit.reason}</span>
                 </div>
@@ -290,6 +193,85 @@ export function SectionInsightCard({ insight }: SectionInsightCardProps) {
             {insight.finalSuggestedText}
           </p>
         </InsightSection>
+      )}
+
+      {/* Collapsible detail toggle */}
+      {hasDetails && (
+        <div className="flex flex-col gap-4">
+          <button
+            type="button"
+            onClick={() => setShowDetails((v) => !v)}
+            className="self-start text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-600"
+          >
+            {showDetails ? "Hide full analysis" : "Show full analysis"}
+          </button>
+
+          {showDetails && (
+            <div className="flex flex-col gap-4 border-t border-zinc-100 pt-4">
+              {/* Original text */}
+              <InsightSection label="Original section">
+                <p className="whitespace-pre-wrap text-sm leading-6 text-zinc-500">
+                  {insight.originalText}
+                </p>
+              </InsightSection>
+
+              {/* Suggested strategy */}
+              {insight.suggestedStrategy && (
+                <InsightSection label="Suggested strategy">
+                  <p className="text-sm leading-6 text-zinc-600">{insight.suggestedStrategy}</p>
+                </InsightSection>
+              )}
+
+              {/* JD keyword matches */}
+              {insight.keyJDMatches.length > 0 && (
+                <InsightSection label="JD keyword matches">
+                  <SignalPillList items={insight.keyJDMatches} />
+                </InsightSection>
+              )}
+
+              {/* Strongly demonstrated */}
+              {insight.stronglyDemonstrated.length > 0 && (
+                <InsightSection label="Strongly demonstrated">
+                  <SignalPillList items={insight.stronglyDemonstrated} />
+                </InsightSection>
+              )}
+
+              {/* Present but under-emphasized */}
+              {insight.underEmphasized.length > 0 && (
+                <InsightSection label="Present but under-emphasized">
+                  <PlainList items={insight.underEmphasized} className="text-amber-800" />
+                </InsightSection>
+              )}
+
+              {/* Adjacent evidence */}
+              {insight.adjacentEvidence.length > 0 && (
+                <InsightSection label="Adjacent evidence">
+                  <PlainList items={insight.adjacentEvidence} className="text-zinc-500" />
+                </InsightSection>
+              )}
+
+              {/* Non-actionable gaps */}
+              {insight.nonActionableGaps.length > 0 && (
+                <InsightSection label="Non-actionable gaps">
+                  <PlainList items={insight.nonActionableGaps} className="text-zinc-400" />
+                </InsightSection>
+              )}
+
+              {/* Do not claim */}
+              {insight.trulyMissing.length > 0 && (
+                <InsightSection label="Do not claim unless true">
+                  <ul className="flex flex-col gap-1.5 rounded-md border border-red-200 bg-red-50 px-4 py-3">
+                    {insight.trulyMissing.map((item, i) => (
+                      <li key={i} className="text-sm leading-6 text-red-800">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </InsightSection>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
