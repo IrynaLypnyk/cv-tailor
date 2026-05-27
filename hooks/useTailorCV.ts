@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { CVSection } from "@/lib/llm/types";
+import type { CVSection, TailoringInsight } from "@/lib/llm/types";
 
 export type TailorStatus =
   | "idle"
@@ -14,6 +14,7 @@ export type TailorStatus =
 export interface TailorCVState {
   status: TailorStatus;
   sections: CVSection[];
+  insights: TailoringInsight[];
   jobDescription: string;
   error: string | null;
 }
@@ -35,12 +36,14 @@ function extractApiError(data: unknown, fallback: string): string {
 export function useTailorCV(): TailorCVState & TailorCVActions {
   const [status, setStatus] = useState<TailorStatus>("idle");
   const [sections, setSections] = useState<CVSection[]>([]);
+  const [insights, setInsights] = useState<TailoringInsight[]>([]);
   const [jobDescription, setJobDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function extractSections(cvFile: File, jd: string) {
     setStatus("extracting");
     setSections([]);
+    setInsights([]);
     setError(null);
     setJobDescription(jd);
 
@@ -109,17 +112,12 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
       if (
         typeof data !== "object" ||
         data === null ||
-        !Array.isArray((data as Record<string, unknown>).sections)
+        !Array.isArray((data as Record<string, unknown>).insights)
       ) {
         throw new Error("Unexpected response from server.");
       }
 
-      const tailored = (data as { sections: CVSection[] }).sections;
-      const tailoredById = new Map(tailored.map((s) => [s.id, s]));
-
-      setSections((prev) =>
-        prev.map((s) => tailoredById.get(s.id) ?? s)
-      );
+      setInsights((data as { insights: TailoringInsight[] }).insights);
       setStatus("tailored");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred.");
@@ -130,9 +128,10 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
   function reset() {
     setStatus("idle");
     setSections([]);
+    setInsights([]);
     setJobDescription("");
     setError(null);
   }
 
-  return { status, sections, jobDescription, error, extractSections, toggleSection, tailorSelected, reset };
+  return { status, sections, insights, jobDescription, error, extractSections, toggleSection, tailorSelected, reset };
 }
