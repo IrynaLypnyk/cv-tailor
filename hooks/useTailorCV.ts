@@ -1,28 +1,44 @@
 "use client";
 
 import { useState } from "react";
-import type { CVSection, TailoringInsight } from "@/lib/llm/types";
+import type {
+  CVSection,
+  ConfirmationItem,
+  GlobalAssessment,
+  SectionRewrite,
+} from "@/lib/llm/types";
 
 export type TailorStatus =
   | "idle"
-  | "extracting"
-  | "sectionsReady"
-  | "tailoring"
-  | "tailored"
+  | "assessing"
+  | "confirming"
+  | "generating"
+  | "done"
   | "error";
 
 export interface TailorCVState {
   status: TailorStatus;
   sections: CVSection[];
-  insights: TailoringInsight[];
+  assessment: GlobalAssessment | null;
+  confirmations: ConfirmationItem[];
+  selectedSectionIds: string[];
+  additionalContext: string;
+  generateCoverLetter: boolean;
+  coverLetterNotes: string;
+  rewrites: SectionRewrite[];
+  coverLetter: string | undefined;
   jobDescription: string;
   error: string | null;
 }
 
 export interface TailorCVActions {
-  extractSections: (cvFile: File, jobDescription: string) => Promise<void>;
+  assess: (cvFile: File, jobDescription: string) => Promise<void>;
+  updateConfirmation: (id: string, answer: ConfirmationItem["answer"]) => void;
   toggleSection: (id: string) => void;
-  tailorSelected: () => Promise<void>;
+  setAdditionalContext: (text: string) => void;
+  setGenerateCoverLetter: (value: boolean) => void;
+  setCoverLetterNotes: (text: string) => void;
+  generateRewrites: () => Promise<void>;
   reset: () => void;
 }
 
@@ -33,17 +49,46 @@ function extractApiError(data: unknown, fallback: string): string {
   return fallback;
 }
 
-export function useTailorCV(): TailorCVState & TailorCVActions {
-  const [status, setStatus] = useState<TailorStatus>("idle");
-  const [sections, setSections] = useState<CVSection[]>([]);
-  const [insights, setInsights] = useState<TailoringInsight[]>([]);
-  const [jobDescription, setJobDescription] = useState("");
-  const [error, setError] = useState<string | null>(null);
+const INITIAL_STATE: TailorCVState = {
+  status: "idle",
+  sections: [],
+  assessment: null,
+  confirmations: [],
+  selectedSectionIds: [],
+  additionalContext: "",
+  generateCoverLetter: false,
+  coverLetterNotes: "",
+  rewrites: [],
+  coverLetter: undefined,
+  jobDescription: "",
+  error: null,
+};
 
-  async function extractSections(cvFile: File, jd: string) {
-    setStatus("extracting");
+export function useTailorCV(): TailorCVState & TailorCVActions {
+  const [status, setStatus] = useState<TailorStatus>(INITIAL_STATE.status);
+  const [sections, setSections] = useState<CVSection[]>(INITIAL_STATE.sections);
+  const [assessment, setAssessment] = useState<GlobalAssessment | null>(INITIAL_STATE.assessment);
+  const [confirmations, setConfirmations] = useState<ConfirmationItem[]>(INITIAL_STATE.confirmations);
+  const [selectedSectionIds, setSelectedSectionIds] = useState<string[]>(INITIAL_STATE.selectedSectionIds);
+  const [additionalContext, setAdditionalContext] = useState(INITIAL_STATE.additionalContext);
+  const [generateCoverLetter, setGenerateCoverLetter] = useState(INITIAL_STATE.generateCoverLetter);
+  const [coverLetterNotes, setCoverLetterNotes] = useState(INITIAL_STATE.coverLetterNotes);
+  const [rewrites, setRewrites] = useState<SectionRewrite[]>(INITIAL_STATE.rewrites);
+  const [coverLetter, setCoverLetter] = useState<string | undefined>(INITIAL_STATE.coverLetter);
+  const [jobDescription, setJobDescription] = useState(INITIAL_STATE.jobDescription);
+  const [error, setError] = useState<string | null>(INITIAL_STATE.error);
+
+  async function assess(cvFile: File, jd: string) {
+    setStatus("assessing");
     setSections([]);
-    setInsights([]);
+    setAssessment(null);
+    setConfirmations([]);
+    setSelectedSectionIds([]);
+    setAdditionalContext("");
+    setGenerateCoverLetter(false);
+    setCoverLetterNotes("");
+    setRewrites([]);
+    setCoverLetter(undefined);
     setError(null);
     setJobDescription(jd);
 
@@ -52,7 +97,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
       formData.append("cv", cvFile);
       formData.append("jobDescription", jd);
 
-      const response = await fetch("/api/extract-sections", {
+      const response = await fetch("/api/assess-cv", {
         method: "POST",
         body: formData,
       });
@@ -61,77 +106,150 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
 
       if (!response.ok) {
         throw new Error(
-          extractApiError(data, "Failed to extract CV sections. Please try again.")
+          extractApiError(data, "Failed to assess CV. Please try again.")
         );
       }
 
       if (
         typeof data !== "object" ||
         data === null ||
-        !Array.isArray((data as Record<string, unknown>).sections)
+        !Array.isArray((data as Record<string, unknown>).sections) ||
+        typeof (data as Record<string, unknown>).assessment !== "object"
       ) {
         throw new Error("Unexpected response from server.");
       }
 
-      setSections((data as { sections: CVSection[] }).sections);
-      setStatus("sectionsReady");
+      const { sections: extractedSections, assessment: globalAssessment } =
+        data as { sections: CVSection[]; assessment: GlobalAssessment };
+
+      setSections(extractedSections);
+      setAssessment(globalAssessment);
+
+      // Initialise confirmations from the assessment — all answers start as null
+      setConfirmations(
+        globalAssessment.needsConfirmation.map((item) => ({
+          ...item,
+          answer: null,
+        }))
+      );
+
+      // Pre-select sections recommended by the AI
+      setSelectedSectionIds(globalAssessment.recommendedSectionIds ?? []);
+
+      setStatus("confirming");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred.");
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred."
+      );
       setStatus("error");
     }
   }
 
-  function toggleSection(id: string) {
-    setSections((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, selected: !s.selected } : s))
+  function updateConfirmation(
+    id: string,
+    answer: ConfirmationItem["answer"]
+  ) {
+    setConfirmations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, answer } : c))
     );
   }
 
-  async function tailorSelected() {
-    const selected = sections.filter((s) => s.selected);
-    if (selected.length === 0) return;
+  function toggleSection(id: string) {
+    setSelectedSectionIds((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  }
 
-    setStatus("tailoring");
+  async function generateRewrites() {
+    if (selectedSectionIds.length === 0 || !assessment) return;
+
+    setStatus("generating");
+    setRewrites([]);
+    setCoverLetter(undefined);
     setError(null);
 
+    const selectedSections = sections
+      .filter((s) => selectedSectionIds.includes(s.id))
+      .map(({ id, title, originalText }) => ({ id, title, originalText }));
+
     try {
-      const response = await fetch("/api/tailor-sections", {
+      const response = await fetch("/api/generate-rewrites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sections: selected, jobDescription }),
+        body: JSON.stringify({
+          sections: selectedSections,
+          jobDescription,
+          underEmphasized: assessment.underEmphasized,
+          confirmations,
+          additionalContext,
+          generateCoverLetter,
+          coverLetterNotes,
+        }),
       });
 
       const data: unknown = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          extractApiError(data, "Failed to tailor sections. Please try again.")
+          extractApiError(data, "Failed to generate rewrites. Please try again.")
         );
       }
 
       if (
         typeof data !== "object" ||
         data === null ||
-        !Array.isArray((data as Record<string, unknown>).insights)
+        !Array.isArray((data as Record<string, unknown>).rewrites)
       ) {
         throw new Error("Unexpected response from server.");
       }
 
-      setInsights((data as { insights: TailoringInsight[] }).insights);
-      setStatus("tailored");
+      const result = data as { rewrites: SectionRewrite[]; coverLetter?: string };
+      setRewrites(result.rewrites);
+      setCoverLetter(result.coverLetter);
+      setStatus("done");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred.");
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred."
+      );
       setStatus("error");
     }
   }
 
   function reset() {
-    setStatus("idle");
-    setSections([]);
-    setInsights([]);
-    setJobDescription("");
-    setError(null);
+    setStatus(INITIAL_STATE.status);
+    setSections(INITIAL_STATE.sections);
+    setAssessment(INITIAL_STATE.assessment);
+    setConfirmations(INITIAL_STATE.confirmations);
+    setSelectedSectionIds(INITIAL_STATE.selectedSectionIds);
+    setAdditionalContext(INITIAL_STATE.additionalContext);
+    setGenerateCoverLetter(INITIAL_STATE.generateCoverLetter);
+    setCoverLetterNotes(INITIAL_STATE.coverLetterNotes);
+    setRewrites(INITIAL_STATE.rewrites);
+    setCoverLetter(INITIAL_STATE.coverLetter);
+    setJobDescription(INITIAL_STATE.jobDescription);
+    setError(INITIAL_STATE.error);
   }
 
-  return { status, sections, insights, jobDescription, error, extractSections, toggleSection, tailorSelected, reset };
+  return {
+    status,
+    sections,
+    assessment,
+    confirmations,
+    selectedSectionIds,
+    additionalContext,
+    generateCoverLetter,
+    coverLetterNotes,
+    rewrites,
+    coverLetter,
+    jobDescription,
+    error,
+    assess,
+    updateConfirmation,
+    toggleSection,
+    setAdditionalContext,
+    setGenerateCoverLetter,
+    setCoverLetterNotes,
+    generateRewrites,
+    reset,
+  };
 }
