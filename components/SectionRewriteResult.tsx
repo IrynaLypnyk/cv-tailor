@@ -36,8 +36,6 @@ function CopyButton({ text }: { text: string }) {
 // ---------------------------------------------------------------------------
 
 function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
-  const [showOriginal, setShowOriginal] = useState(false);
-
   return (
     <div
       data-component="RewriteCard"
@@ -45,17 +43,30 @@ function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
     >
       <h3 className="text-sm font-semibold text-foreground">{rewrite.title}</h3>
 
-      {/* After — primary focus */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-4">
+      {/* Side-by-side comparison: stacked on mobile, two columns on sm+ */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* Before */}
+        <div className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-            After
+            Before
           </span>
-          <CopyButton text={rewrite.rewrittenText} />
+          <p className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-background px-4 py-3 text-sm leading-6 text-zinc-500 h-full">
+            {rewrite.originalText}
+          </p>
         </div>
-        <p className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-6 text-foreground">
-          {rewrite.rewrittenText}
-        </p>
+
+        {/* After */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              After
+            </span>
+            <CopyButton text={rewrite.rewrittenText} />
+          </div>
+          <p className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-6 text-foreground h-full">
+            {rewrite.rewrittenText}
+          </p>
+        </div>
       </div>
 
       {/* Notes */}
@@ -65,27 +76,6 @@ function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
           {rewrite.notes}
         </p>
       )}
-
-      {/* Collapsible original */}
-      <div className="flex flex-col gap-3">
-        <button
-          type="button"
-          onClick={() => setShowOriginal((v) => !v)}
-          className="self-start text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-600"
-        >
-          {showOriginal ? "Hide original" : "Show original"}
-        </button>
-        {showOriginal && (
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-              Before
-            </span>
-            <p className="whitespace-pre-wrap text-sm leading-6 text-zinc-500">
-              {rewrite.originalText}
-            </p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
