@@ -2,25 +2,43 @@
 
 import { useTailorCV } from "@/hooks/useTailorCV";
 import { CVUploadForm } from "./CVUploadForm";
-import { CVSectionList } from "./CVSectionList";
-import { TailoredSectionsResult } from "./SectionBeforeAfter";
+import { GlobalAssessmentView } from "./GlobalAssessmentView";
+import { ConfirmAndGenerateForm } from "./ConfirmAndGenerateForm";
+import { SectionRewriteResult } from "./SectionRewriteResult";
 import { StatusMessage } from "./StatusMessage";
 
 export function TailorPage() {
   const {
     status,
     sections,
-    insights,
+    assessment,
+    confirmations,
+    selectedSectionIds,
+    additionalContext,
+    generateCoverLetter,
+    coverLetterNotes,
+    rewrites,
+    coverLetter,
     error,
-    extractSections,
+    assess,
+    updateConfirmation,
     toggleSection,
-    tailorSelected,
+    setAdditionalContext,
+    setGenerateCoverLetter,
+    setCoverLetterNotes,
+    generateRewrites,
     reset,
   } = useTailorCV();
 
-  const showForm = status === "idle" || status === "extracting" || status === "error";
-  const showSections = status === "sectionsReady" || status === "tailoring";
-  const showResult = status === "tailored";
+  const showForm =
+    status === "idle" || status === "assessing" || status === "error";
+  const showConfirming =
+    status === "confirming" || status === "generating";
+  const showResult = status === "done";
+
+  const hasUnansweredConfirmations = confirmations.some(
+    (c) => c.answer === null
+  );
 
   return (
     <div
@@ -32,35 +50,52 @@ export function TailorPage() {
           CV Tailor
         </h1>
         <p className="text-sm text-zinc-500">
-          Upload your CV and a job description. Select which sections to improve,
-          then review targeted editing suggestions for each one.
+          Upload your CV and a job description to get a global assessment and
+          targeted section rewrites.
         </p>
       </header>
 
       {showForm && (
         <>
           <CVUploadForm
-            onSubmit={extractSections}
-            isLoading={status === "extracting"}
+            onSubmit={assess}
+            isLoading={status === "assessing"}
           />
           <StatusMessage status={status} error={error} />
         </>
       )}
 
-      {showSections && (
+      {showConfirming && assessment && (
         <>
-          <CVSectionList
+          <GlobalAssessmentView
+            assessment={assessment}
+            confirmations={confirmations}
+            onUpdateConfirmation={updateConfirmation}
+          />
+          <ConfirmAndGenerateForm
             sections={sections}
-            isLoading={status === "tailoring"}
-            onToggle={toggleSection}
-            onTailor={tailorSelected}
+            selectedSectionIds={selectedSectionIds}
+            onToggleSection={toggleSection}
+            additionalContext={additionalContext}
+            onAdditionalContextChange={setAdditionalContext}
+            generateCoverLetter={generateCoverLetter}
+            onGenerateCoverLetterChange={setGenerateCoverLetter}
+            coverLetterNotes={coverLetterNotes}
+            onCoverLetterNotesChange={setCoverLetterNotes}
+            hasUnansweredConfirmations={hasUnansweredConfirmations}
+            onGenerate={generateRewrites}
+            isLoading={status === "generating"}
           />
           <StatusMessage status={status} error={null} />
         </>
       )}
 
       {showResult && (
-        <TailoredSectionsResult insights={insights} onReset={reset} />
+        <SectionRewriteResult
+          rewrites={rewrites}
+          coverLetter={coverLetter}
+          onReset={reset}
+        />
       )}
     </div>
   );

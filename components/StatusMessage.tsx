@@ -6,8 +6,8 @@ interface StatusMessageProps {
 }
 
 const LOADING_MESSAGES: Partial<Record<TailorStatus, string>> = {
-  extracting: "Detecting CV sections — this may take a moment...",
-  tailoring: "Tailoring selected sections — this may take a moment...",
+  assessing: "Analysing your CV against the job description — this may take a moment...",
+  generating: "Generating tailored rewrites — this may take a moment...",
 };
 
 export function StatusMessage({ status, error }: StatusMessageProps) {
