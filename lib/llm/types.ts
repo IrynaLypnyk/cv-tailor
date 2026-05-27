@@ -14,7 +14,6 @@ export interface CVSection {
   originalText: string;
   selected: boolean;
   relevanceReason?: string;
-  tailoredText?: string;
 }
 
 export interface TailoringInsight {
