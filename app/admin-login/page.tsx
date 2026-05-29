@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { TextInput } from "@/components/TextInput";
+import { FormField } from "@/components/FormField";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -56,13 +57,7 @@ export default function AdminLoginPage() {
       </header>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor="admin-password"
-            className="text-sm font-medium text-foreground"
-          >
-            Password
-          </label>
+        <FormField htmlFor="admin-password" label="Password">
           <TextInput
             id="admin-password"
             type="password"
@@ -71,7 +66,7 @@ export default function AdminLoginPage() {
             disabled={isLoading}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
+        </FormField>
 
         {error && (
           <p className="text-sm text-red-600">{error}</p>

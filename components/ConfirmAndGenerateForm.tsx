@@ -4,6 +4,7 @@ import type { CVSection, CoverLetterContext } from "@/lib/llm/types";
 import { Button } from "./Button";
 import { TextInput } from "./TextInput";
 import { Textarea } from "./Textarea";
+import { FormField } from "./FormField";
 
 interface ConfirmAndGenerateFormProps {
   sections: CVSection[];
@@ -133,11 +134,7 @@ export function ConfirmAndGenerateForm({
             </p>
 
             {/* Role title */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="cl-role-title" className="text-sm font-medium text-foreground">
-                Role title{" "}
-                <span className="font-normal text-zinc-500">(optional)</span>
-              </label>
+            <FormField htmlFor="cl-role-title" label="Role title" hint="(optional)">
               <TextInput
                 id="cl-role-title"
                 type="text"
@@ -149,14 +146,10 @@ export function ConfirmAndGenerateForm({
                   onCoverLetterContextChange({ roleTitle: e.target.value || undefined })
                 }
               />
-            </div>
+            </FormField>
 
             {/* Hiring company name */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="cl-company-name" className="text-sm font-medium text-foreground">
-                Hiring company name{" "}
-                <span className="font-normal text-zinc-500">(optional)</span>
-              </label>
+            <FormField htmlFor="cl-company-name" label="Hiring company name" hint="(optional)">
               <TextInput
                 id="cl-company-name"
                 type="text"
@@ -168,7 +161,7 @@ export function ConfirmAndGenerateForm({
                   onCoverLetterContextChange({ hiringCompanyName: e.target.value || undefined })
                 }
               />
-            </div>
+            </FormField>
 
             {/* Recruiter / agency checkbox */}
             <label className="flex cursor-pointer items-start gap-3">
@@ -194,11 +187,7 @@ export function ConfirmAndGenerateForm({
             </label>
 
             {/* Motivation */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="cl-motivation" className="text-sm font-medium text-foreground">
-                Why are you interested?{" "}
-                <span className="font-normal text-zinc-500">(optional)</span>
-              </label>
+            <FormField htmlFor="cl-motivation" label="Why are you interested?" hint="(optional)">
               <Textarea
                 id="cl-motivation"
                 rows={3}
@@ -210,14 +199,10 @@ export function ConfirmAndGenerateForm({
                   onCoverLetterContextChange({ motivation: e.target.value || undefined })
                 }
               />
-            </div>
+            </FormField>
 
             {/* Location / right to work */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="cl-location" className="text-sm font-medium text-foreground">
-                Location or right-to-work note{" "}
-                <span className="font-normal text-zinc-500">(optional)</span>
-              </label>
+            <FormField htmlFor="cl-location" label="Location or right-to-work note" hint="(optional)">
               <TextInput
                 id="cl-location"
                 type="text"
@@ -229,14 +214,10 @@ export function ConfirmAndGenerateForm({
                   onCoverLetterContextChange({ locationRightToWork: e.target.value || undefined })
                 }
               />
-            </div>
+            </FormField>
 
             {/* Do not mention */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="cl-do-not-mention" className="text-sm font-medium text-foreground">
-                Do not mention{" "}
-                <span className="font-normal text-zinc-500">(optional)</span>
-              </label>
+            <FormField htmlFor="cl-do-not-mention" label="Do not mention" hint="(optional)">
               <Textarea
                 id="cl-do-not-mention"
                 rows={2}
@@ -248,14 +229,10 @@ export function ConfirmAndGenerateForm({
                   onCoverLetterContextChange({ doNotMention: e.target.value || undefined })
                 }
               />
-            </div>
+            </FormField>
 
             {/* Additional notes */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="cl-additional-notes" className="text-sm font-medium text-foreground">
-                Additional cover letter notes{" "}
-                <span className="font-normal text-zinc-500">(optional)</span>
-              </label>
+            <FormField htmlFor="cl-additional-notes" label="Additional cover letter notes" hint="(optional)">
               <Textarea
                 id="cl-additional-notes"
                 rows={3}
@@ -267,7 +244,7 @@ export function ConfirmAndGenerateForm({
                   onCoverLetterContextChange({ additionalNotes: e.target.value || undefined })
                 }
               />
-            </div>
+            </FormField>
           </div>
         )}
       </div>

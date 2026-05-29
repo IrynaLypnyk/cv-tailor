@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Button } from "./Button";
 import { Textarea } from "./Textarea";
+import { FormField } from "./FormField";
 
 interface CVUploadFormProps {
   onSubmit: (cvFile: File, jobDescription: string) => void;
@@ -28,14 +29,7 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
       onSubmit={handleSubmit}
       className="flex flex-col gap-6"
     >
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="cv-upload"
-          className="text-sm font-medium text-foreground"
-        >
-          CV file{" "}
-          <span className="font-normal text-zinc-500">(.docx only)</span>
-        </label>
+      <FormField htmlFor="cv-upload" label="CV file" hint="(.docx only)">
         <input
           id="cv-upload"
           ref={fileInputRef}
@@ -48,15 +42,9 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
         {cvFile && (
           <p className="text-xs text-zinc-500">Selected: {cvFile.name}</p>
         )}
-      </div>
+      </FormField>
 
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="job-description"
-          className="text-sm font-medium text-foreground"
-        >
-          Job description
-        </label>
+      <FormField htmlFor="job-description" label="Job description">
         <Textarea
           id="job-description"
           rows={10}
@@ -65,7 +53,7 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
           disabled={isLoading}
           onChange={(e) => setJobDescription(e.target.value)}
         />
-      </div>
+      </FormField>
 
       <Button variant="primary" type="submit" disabled={isDisabled} className="self-start">
         {isLoading ? "Tailoring..." : "Tailor CV"}
