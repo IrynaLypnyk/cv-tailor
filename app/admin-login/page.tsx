@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/Button";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -76,13 +77,9 @@ export default function AdminLoginPage() {
           <p className="text-sm text-red-600">{error}</p>
         )}
 
-        <button
-          type="submit"
-          disabled={!password.trim() || isLoading}
-          className="rounded-md bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-        >
+        <Button variant="primary" type="submit" disabled={!password.trim() || isLoading}>
           {isLoading ? "Signing in…" : "Sign in"}
-        </button>
+        </Button>
       </form>
     </div>
   );

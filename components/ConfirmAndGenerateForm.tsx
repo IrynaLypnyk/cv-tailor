@@ -1,6 +1,7 @@
 "use client";
 
 import type { CVSection, CoverLetterContext } from "@/lib/llm/types";
+import { Button } from "./Button";
 
 interface ConfirmAndGenerateFormProps {
   sections: CVSection[];
@@ -271,14 +272,9 @@ export function ConfirmAndGenerateForm({
       </div>
 
       {/* Generate button */}
-      <button
-        type="button"
-        disabled={isDisabled}
-        onClick={onGenerate}
-        className="self-start rounded-md bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-      >
+      <Button variant="primary" disabled={isDisabled} onClick={onGenerate} className="self-start">
         {buttonLabel}
-      </button>
+      </Button>
     </div>
   );
 }

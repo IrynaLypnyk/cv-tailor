@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { SectionRewrite } from "@/lib/llm/types";
+import { Button } from "./Button";
 
 // ---------------------------------------------------------------------------
 // Copy button with transient "Copied!" confirmation
@@ -122,13 +123,9 @@ export function SectionRewriteResult({
         <h2 className="text-base font-semibold text-foreground">
           Tailored CV sections
         </h2>
-        <button
-          type="button"
-          onClick={onReset}
-          className="text-sm text-zinc-500 underline underline-offset-2 hover:text-foreground"
-        >
+        <Button variant="ghost" onClick={onReset}>
           Start again
-        </button>
+        </Button>
       </div>
 
       {rewrites.length === 0 ? (

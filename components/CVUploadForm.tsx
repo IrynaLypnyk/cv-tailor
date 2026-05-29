@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { Button } from "./Button";
 
 interface CVUploadFormProps {
   onSubmit: (cvFile: File, jobDescription: string) => void;
@@ -66,13 +67,9 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={isDisabled}
-        className="self-start rounded-md bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-      >
+      <Button variant="primary" type="submit" disabled={isDisabled} className="self-start">
         {isLoading ? "Tailoring..." : "Tailor CV"}
-      </button>
+      </Button>
     </form>
   );
 }
