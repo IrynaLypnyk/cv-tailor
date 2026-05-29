@@ -45,6 +45,14 @@ const DEMO_LIMIT = 2;
 /** How long the demo block lasts before the counter resets (3 days in ms). */
 const DEMO_TTL_MS = 3 * 24 * 60 * 60 * 1000;
 
+/**
+ * Appends "; Secure" in production so cookies are only sent over HTTPS.
+ * Omitted in development because localhost runs over plain HTTP and most
+ * browsers refuse Secure cookies on non-HTTPS origins.
+ */
+const SECURE_FLAG =
+  process.env.NODE_ENV === "production" ? "; Secure" : "";
+
 // ---------------------------------------------------------------------------
 // Admin session — HMAC-signed stateless token
 // ---------------------------------------------------------------------------
@@ -188,7 +196,7 @@ export function buildDemoCounterCookie(existing: DemoCounter | null): string {
 
   const value = encodeURIComponent(JSON.stringify(counter));
   const maxAge = Math.ceil(DEMO_TTL_MS / 1000);
-  return `${DEMO_COOKIE}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}`;
+  return `${DEMO_COOKIE}=${value}; Path=/; HttpOnly; SameSite=Strict${SECURE_FLAG}; Max-Age=${maxAge}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -253,7 +261,7 @@ export function getAccessInfo(
  */
 export function buildAdminSessionCookie(token: string): string {
   const sevenDaysInSeconds = 7 * 24 * 60 * 60;
-  return `${ADMIN_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${sevenDaysInSeconds}`;
+  return `${ADMIN_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict${SECURE_FLAG}; Max-Age=${sevenDaysInSeconds}`;
 }
 
 /**
@@ -261,7 +269,7 @@ export function buildAdminSessionCookie(token: string): string {
  * Used by /api/admin-logout (optional logout route).
  */
 export function buildAdminSessionClearCookie(): string {
-  return `${ADMIN_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`;
+  return `${ADMIN_COOKIE}=; Path=/; HttpOnly; SameSite=Strict${SECURE_FLAG}; Max-Age=0`;
 }
 
 // ---------------------------------------------------------------------------
