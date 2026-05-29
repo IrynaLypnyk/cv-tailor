@@ -2,6 +2,8 @@
 
 import type { CVSection, CoverLetterContext } from "@/lib/llm/types";
 import { Button } from "./Button";
+import { TextInput } from "./TextInput";
+import { Textarea } from "./Textarea";
 
 interface ConfirmAndGenerateFormProps {
   sections: CVSection[];
@@ -99,14 +101,13 @@ export function ConfirmAndGenerateForm({
         <p className="text-xs text-zinc-500">
           Add any truthful experience or details not visible in your uploaded CV. The AI will use this carefully and will not exaggerate beyond what you write.
         </p>
-        <textarea
+        <Textarea
           id="additional-context"
           rows={4}
           placeholder='e.g. "I have used Zustand in a personal project." or "I have basic Playwright testing experience."'
           value={additionalContext}
           disabled={isLoading}
           onChange={(e) => onAdditionalContextChange(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 bg-background px-4 py-3 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
 
@@ -137,16 +138,16 @@ export function ConfirmAndGenerateForm({
                 Role title{" "}
                 <span className="font-normal text-zinc-500">(optional)</span>
               </label>
-              <input
+              <TextInput
                 id="cl-role-title"
                 type="text"
+                fieldSize="sm"
                 placeholder="React Developer"
                 value={coverLetterContext.roleTitle ?? ""}
                 disabled={isLoading}
                 onChange={(e) =>
                   onCoverLetterContextChange({ roleTitle: e.target.value || undefined })
                 }
-                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
@@ -156,16 +157,16 @@ export function ConfirmAndGenerateForm({
                 Hiring company name{" "}
                 <span className="font-normal text-zinc-500">(optional)</span>
               </label>
-              <input
+              <TextInput
                 id="cl-company-name"
                 type="text"
+                fieldSize="sm"
                 placeholder="Leave empty if the hiring company is unknown"
                 value={coverLetterContext.hiringCompanyName ?? ""}
                 disabled={isLoading}
                 onChange={(e) =>
                   onCoverLetterContextChange({ hiringCompanyName: e.target.value || undefined })
                 }
-                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
@@ -198,16 +199,16 @@ export function ConfirmAndGenerateForm({
                 Why are you interested?{" "}
                 <span className="font-normal text-zinc-500">(optional)</span>
               </label>
-              <textarea
+              <Textarea
                 id="cl-motivation"
                 rows={3}
+                fieldSize="sm"
                 placeholder="Example: I'm interested in this role because it combines React, product engineering, and AI-enabled features."
                 value={coverLetterContext.motivation ?? ""}
                 disabled={isLoading}
                 onChange={(e) =>
                   onCoverLetterContextChange({ motivation: e.target.value || undefined })
                 }
-                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
@@ -217,16 +218,16 @@ export function ConfirmAndGenerateForm({
                 Location or right-to-work note{" "}
                 <span className="font-normal text-zinc-500">(optional)</span>
               </label>
-              <input
+              <TextInput
                 id="cl-location"
                 type="text"
+                fieldSize="sm"
                 placeholder="Example: I am currently based in the UK with full right to work."
                 value={coverLetterContext.locationRightToWork ?? ""}
                 disabled={isLoading}
                 onChange={(e) =>
                   onCoverLetterContextChange({ locationRightToWork: e.target.value || undefined })
                 }
-                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
@@ -236,16 +237,16 @@ export function ConfirmAndGenerateForm({
                 Do not mention{" "}
                 <span className="font-normal text-zinc-500">(optional)</span>
               </label>
-              <textarea
+              <Textarea
                 id="cl-do-not-mention"
                 rows={2}
+                fieldSize="sm"
                 placeholder="Example: Do not mention Azure. Do not mention Huxley as the employer."
                 value={coverLetterContext.doNotMention ?? ""}
                 disabled={isLoading}
                 onChange={(e) =>
                   onCoverLetterContextChange({ doNotMention: e.target.value || undefined })
                 }
-                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
@@ -255,16 +256,16 @@ export function ConfirmAndGenerateForm({
                 Additional cover letter notes{" "}
                 <span className="font-normal text-zinc-500">(optional)</span>
               </label>
-              <textarea
+              <Textarea
                 id="cl-additional-notes"
                 rows={3}
+                fieldSize="sm"
                 placeholder='e.g. "Make the tone warm but professional." or "Mention I am looking for a senior IC role, not management."'
                 value={coverLetterContext.additionalNotes ?? ""}
                 disabled={isLoading}
                 onChange={(e) =>
                   onCoverLetterContextChange({ additionalNotes: e.target.value || undefined })
                 }
-                className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
           </div>

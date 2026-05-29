@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Button } from "./Button";
+import { Textarea } from "./Textarea";
 
 interface CVUploadFormProps {
   onSubmit: (cvFile: File, jobDescription: string) => void;
@@ -56,14 +57,13 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
         >
           Job description
         </label>
-        <textarea
+        <Textarea
           id="job-description"
           rows={10}
           placeholder="Paste the full job description here..."
           value={jobDescription}
           disabled={isLoading}
           onChange={(e) => setJobDescription(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 bg-background px-4 py-3 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
 

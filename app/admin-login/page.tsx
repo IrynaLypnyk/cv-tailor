@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
+import { TextInput } from "@/components/TextInput";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -62,14 +63,13 @@ export default function AdminLoginPage() {
           >
             Password
           </label>
-          <input
+          <TextInput
             id="admin-password"
             type="password"
             autoComplete="current-password"
             value={password}
             disabled={isLoading}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-zinc-300 bg-background px-4 py-3 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
 

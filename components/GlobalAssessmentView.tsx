@@ -6,6 +6,7 @@ import type {
   ConfirmationStatus,
   EvidenceSource,
 } from "@/lib/llm/types";
+import { Textarea } from "./Textarea";
 
 interface UpdateConfirmationPatch {
   status?: ConfirmationStatus;
@@ -198,9 +199,10 @@ export function GlobalAssessmentView({
                           Add short evidence/context{" "}
                           <span className="font-normal text-zinc-400">(optional)</span>
                         </label>
-                        <textarea
+                        <Textarea
                           id={`evidence-note-${item.id}`}
                           rows={2}
+                          fieldSize="sm"
                           placeholder='e.g. "AWS only, through cloud bootcamp. No Azure production experience." or "Used Vite in a portfolio project."'
                           value={item.evidenceNote ?? ""}
                           onChange={(e) =>
@@ -208,7 +210,6 @@ export function GlobalAssessmentView({
                               evidenceNote: e.target.value || undefined,
                             })
                           }
-                          className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
                         />
                       </div>
                     </div>
