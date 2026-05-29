@@ -2,9 +2,8 @@
 
 import type { CVSection, CoverLetterContext } from "@/lib/llm/types";
 import { Button } from "./Button";
-import { TextInput } from "./TextInput";
 import { Textarea } from "./Textarea";
-import { FormField } from "./FormField";
+import { CoverLetterContextFields } from "./CoverLetterContextFields";
 
 interface ConfirmAndGenerateFormProps {
   sections: CVSection[];
@@ -128,124 +127,11 @@ export function ConfirmAndGenerateForm({
         </label>
 
         {generateCoverLetter && (
-          <div className="flex flex-col gap-5 rounded-md border border-zinc-200 px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-              Cover letter context
-            </p>
-
-            {/* Role title */}
-            <FormField htmlFor="cl-role-title" label="Role title" hint="(optional)">
-              <TextInput
-                id="cl-role-title"
-                type="text"
-                fieldSize="sm"
-                placeholder="React Developer"
-                value={coverLetterContext.roleTitle ?? ""}
-                disabled={isLoading}
-                onChange={(e) =>
-                  onCoverLetterContextChange({ roleTitle: e.target.value || undefined })
-                }
-              />
-            </FormField>
-
-            {/* Hiring company name */}
-            <FormField htmlFor="cl-company-name" label="Hiring company name" hint="(optional)">
-              <TextInput
-                id="cl-company-name"
-                type="text"
-                fieldSize="sm"
-                placeholder="Leave empty if the hiring company is unknown"
-                value={coverLetterContext.hiringCompanyName ?? ""}
-                disabled={isLoading}
-                onChange={(e) =>
-                  onCoverLetterContextChange({ hiringCompanyName: e.target.value || undefined })
-                }
-              />
-            </FormField>
-
-            {/* Recruiter / agency checkbox */}
-            <label className="flex cursor-pointer items-start gap-3">
-              <input
-                type="checkbox"
-                checked={coverLetterContext.visibleCompanyIsRecruiter ?? false}
-                disabled={isLoading}
-                onChange={(e) =>
-                  onCoverLetterContextChange({
-                    visibleCompanyIsRecruiter: e.target.checked || undefined,
-                  })
-                }
-                className="mt-0.5 h-4 w-4 shrink-0 accent-foreground disabled:cursor-not-allowed"
-              />
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium text-foreground">
-                  The visible company appears to be a recruiter or agency, not the hiring company
-                </span>
-                <span className="text-xs text-zinc-500">
-                  If selected, the cover letter will not refer to that company as the employer.
-                </span>
-              </div>
-            </label>
-
-            {/* Motivation */}
-            <FormField htmlFor="cl-motivation" label="Why are you interested?" hint="(optional)">
-              <Textarea
-                id="cl-motivation"
-                rows={3}
-                fieldSize="sm"
-                placeholder="Example: I'm interested in this role because it combines React, product engineering, and AI-enabled features."
-                value={coverLetterContext.motivation ?? ""}
-                disabled={isLoading}
-                onChange={(e) =>
-                  onCoverLetterContextChange({ motivation: e.target.value || undefined })
-                }
-              />
-            </FormField>
-
-            {/* Location / right to work */}
-            <FormField htmlFor="cl-location" label="Location or right-to-work note" hint="(optional)">
-              <TextInput
-                id="cl-location"
-                type="text"
-                fieldSize="sm"
-                placeholder="Example: I am currently based in the UK with full right to work."
-                value={coverLetterContext.locationRightToWork ?? ""}
-                disabled={isLoading}
-                onChange={(e) =>
-                  onCoverLetterContextChange({ locationRightToWork: e.target.value || undefined })
-                }
-              />
-            </FormField>
-
-            {/* Do not mention */}
-            <FormField htmlFor="cl-do-not-mention" label="Do not mention" hint="(optional)">
-              <Textarea
-                id="cl-do-not-mention"
-                rows={2}
-                fieldSize="sm"
-                placeholder="Example: Do not mention Azure. Do not mention Huxley as the employer."
-                value={coverLetterContext.doNotMention ?? ""}
-                disabled={isLoading}
-                onChange={(e) =>
-                  onCoverLetterContextChange({ doNotMention: e.target.value || undefined })
-                }
-              />
-            </FormField>
-
-            {/* Additional notes */}
-            <FormField htmlFor="cl-additional-notes" label="Additional cover letter notes" hint="(optional)">
-              <Textarea
-                id="cl-additional-notes"
-                rows={3}
-                fieldSize="sm"
-                placeholder='e.g. "Make the tone warm but professional." or "Mention I am looking for a senior IC role, not management."'
-                value={coverLetterContext.additionalNotes ?? ""}
-                disabled={isLoading}
-                onChange={(e) =>
-                  onCoverLetterContextChange({ additionalNotes: e.target.value || undefined })
-                }
-              />
-            </FormField>
-          </div>
+          <CoverLetterContextFields
+            context={coverLetterContext}
+            onChange={onCoverLetterContextChange}
+            disabled={isLoading}
+          />
         )}
       </div>
 
