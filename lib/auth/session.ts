@@ -113,7 +113,7 @@ export function verifyAdminToken(token: string): boolean {
  * - firstUsed  — Unix millisecond timestamp of the very first request;
  *                used to calculate when the 3-day cooldown expires
  */
-interface DemoCounter {
+export interface DemoCounter {
   count: number;
   firstUsed: number;
 }
@@ -316,6 +316,41 @@ function parseCookieHeader(header: string): Record<string, string> {
       return [k?.trim() ?? "", v.join("=")];
     })
   );
+}
+
+// ---------------------------------------------------------------------------
+// Shared access check for API route handlers
+// ---------------------------------------------------------------------------
+
+/**
+ * Determines whether an incoming API request is allowed to proceed.
+ *
+ * Reads both the admin session cookie and the demo counter cookie from the
+ * raw request headers (since next/headers is not available in route handlers).
+ *
+ * Returns:
+ *  - allowed        — false means the handler should respond with HTTP 403
+ *  - isAdmin        — true means the request carries a valid admin session;
+ *                     the caller should skip demo-counter updates
+ *  - existingCounter — the current demo counter value, needed by assess-cv
+ *                     to build the incremented Set-Cookie header on success
+ */
+export function checkAccessFromRequest(req: Request): {
+  allowed: boolean;
+  isAdmin: boolean;
+  existingCounter: DemoCounter | null;
+} {
+  const adminToken = getAdminTokenFromRequest(req);
+  if (adminToken && verifyAdminToken(adminToken)) {
+    return { allowed: true, isAdmin: true, existingCounter: null };
+  }
+
+  const counter = getDemoCounterFromRequest(req);
+  if (isDemoLimitReached(counter)) {
+    return { allowed: false, isAdmin: false, existingCounter: counter };
+  }
+
+  return { allowed: true, isAdmin: false, existingCounter: counter };
 }
 
 // ---------------------------------------------------------------------------
