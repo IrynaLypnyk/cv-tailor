@@ -8,34 +8,7 @@ import { ConfirmAndGenerateForm } from "./ConfirmAndGenerateForm";
 import { SectionRewriteResult } from "./SectionRewriteResult";
 import { StatusMessage } from "./StatusMessage";
 import type { AccessInfo } from "@/lib/auth/session";
-
-// ---------------------------------------------------------------------------
-// Access banners — shown based on server-resolved access info
-// ---------------------------------------------------------------------------
-
-function DemoBanner() {
-  return (
-    <div
-      data-component="DemoBanner"
-      className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
-    >
-      <span className="font-semibold">Demo mode:</span> you can try up to 2
-      real AI requests. Full access is available only to the admin.
-    </div>
-  );
-}
-
-function DemoLimitBanner() {
-  return (
-    <div
-      data-component="DemoLimitBanner"
-      className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-    >
-      <span className="font-semibold">Demo limit reached.</span> You've used
-      your 2 demo requests. Please try again in 3 days.
-    </div>
-  );
-}
+import { AlertBanner } from "./AlertBanner";
 
 // ---------------------------------------------------------------------------
 // Local collapsible wrapper — only used on this page
@@ -133,12 +106,20 @@ export function TailorPage({ accessInfo }: TailorPageProps) {
         </p>
       </header>
 
-      {showDemoBanner && <DemoBanner />}
+      {showDemoBanner && (
+        <AlertBanner variant="amber">
+          <span className="font-semibold">Demo mode:</span> you can try up to 2
+          real AI requests. Full access is available only to the admin.
+        </AlertBanner>
+      )}
 
       {showForm && (
         <>
           {demoLimitReached ? (
-            <DemoLimitBanner />
+            <AlertBanner variant="red">
+              <span className="font-semibold">Demo limit reached.</span> You've used
+              your 2 demo requests. Please try again in 3 days.
+            </AlertBanner>
           ) : (
             <>
               <CVUploadForm
