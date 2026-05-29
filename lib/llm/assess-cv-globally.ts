@@ -4,6 +4,7 @@ import {
   SYSTEM_PROMPT,
   buildUserMessage,
 } from "./prompts/assess-cv-globally.prompt";
+import { simulateDelay, MOCK_GLOBAL_ASSESSMENT } from "./mock/fixtures";
 
 async function callOpenAI(
   sections: CVSection[],
@@ -58,7 +59,7 @@ async function callOpenAI(
         id: String(item.id ?? ""),
         skill: String(item.skill ?? ""),
         context: String(item.context ?? ""),
-        answer: null,
+        status: null,
       })
     ),
     nonActionableGaps: data.nonActionableGaps as string[],
@@ -75,6 +76,9 @@ export async function assessCVGlobally(
   switch (provider) {
     case "openai":
       return callOpenAI(sections, jobDescription);
+    case "mock":
+      await simulateDelay();
+      return MOCK_GLOBAL_ASSESSMENT;
     default:
       throw new Error(`Unsupported LLM_PROVIDER: "${provider}"`);
   }

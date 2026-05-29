@@ -5,6 +5,7 @@ import {
   buildUserMessage,
   type RewriteInput,
 } from "./prompts/generate-section-rewrites.prompt";
+import { simulateDelay, mockGenerateSectionRewrites } from "./mock/fixtures";
 
 async function callOpenAI(input: RewriteInput): Promise<SectionRewrite[]> {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -63,6 +64,9 @@ export async function generateSectionRewrites(
   switch (provider) {
     case "openai":
       return callOpenAI(input);
+    case "mock":
+      await simulateDelay(2000);
+      return mockGenerateSectionRewrites(input);
     default:
       throw new Error(`Unsupported LLM_PROVIDER: "${provider}"`);
   }

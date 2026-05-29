@@ -4,6 +4,7 @@ import {
   buildCoverLetterUserMessage,
   type CoverLetterInput,
 } from "./prompts/generate-cover-letter.prompt";
+import { simulateDelay, MOCK_COVER_LETTER } from "./mock/fixtures";
 
 async function callOpenAI(input: CoverLetterInput): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -52,6 +53,9 @@ export async function generateCoverLetter(
   switch (provider) {
     case "openai":
       return callOpenAI(input);
+    case "mock":
+      await simulateDelay(1800);
+      return MOCK_COVER_LETTER;
     default:
       throw new Error(`Unsupported LLM_PROVIDER: "${provider}"`);
   }

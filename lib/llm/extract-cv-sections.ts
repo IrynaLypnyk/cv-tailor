@@ -4,6 +4,7 @@ import {
   SYSTEM_PROMPT,
   buildUserMessage,
 } from "./prompts/extract-cv-sections.prompt";
+import { simulateDelay, MOCK_CV_SECTIONS } from "./mock/fixtures";
 
 async function callOpenAI(
   cvText: string,
@@ -54,6 +55,9 @@ export async function extractCVSections(
   switch (provider) {
     case "openai":
       return callOpenAI(cvText, jobDescription);
+    case "mock":
+      await simulateDelay();
+      return MOCK_CV_SECTIONS;
     default:
       throw new Error(`Unsupported LLM_PROVIDER: "${provider}"`);
   }
