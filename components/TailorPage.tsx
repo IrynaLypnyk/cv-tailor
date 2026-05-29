@@ -43,6 +43,24 @@ function CollapsibleStep({
 }
 
 // ---------------------------------------------------------------------------
+// Helper — wraps content in a CollapsibleStep only when collapsed is true
+// ---------------------------------------------------------------------------
+
+function maybeCollapse(
+  title: string,
+  collapsed: boolean,
+  children: React.ReactNode
+): React.ReactNode {
+  return collapsed ? (
+    <CollapsibleStep title={title} defaultOpen={false}>
+      {children}
+    </CollapsibleStep>
+  ) : (
+    children
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
@@ -134,15 +152,9 @@ export function TailorPage({ accessInfo }: TailorPageProps) {
 
       {showGuidedFlow && assessment && (
         <>
-          {isDone ? (
-            <CollapsibleStep title="Global CV assessment" defaultOpen={false}>
-              <GlobalAssessmentView
-                assessment={assessment}
-                confirmations={confirmations}
-                onUpdateConfirmation={updateConfirmation}
-              />
-            </CollapsibleStep>
-          ) : (
+          {maybeCollapse(
+            "Global CV assessment",
+            isDone,
             <GlobalAssessmentView
               assessment={assessment}
               confirmations={confirmations}
@@ -150,24 +162,9 @@ export function TailorPage({ accessInfo }: TailorPageProps) {
             />
           )}
 
-          {isDone ? (
-            <CollapsibleStep title="Options and sections" defaultOpen={false}>
-              <ConfirmAndGenerateForm
-                sections={sections}
-                selectedSectionIds={selectedSectionIds}
-                onToggleSection={toggleSection}
-                additionalContext={additionalContext}
-                onAdditionalContextChange={setAdditionalContext}
-                generateCoverLetter={generateCoverLetter}
-                onGenerateCoverLetterChange={setGenerateCoverLetter}
-                coverLetterContext={coverLetterContext}
-                onCoverLetterContextChange={setCoverLetterContext}
-                hasUnansweredConfirmations={hasUnansweredConfirmations}
-                onGenerate={generateRewrites}
-                isLoading={false}
-              />
-            </CollapsibleStep>
-          ) : (
+          {maybeCollapse(
+            "Options and sections",
+            isDone,
             <ConfirmAndGenerateForm
               sections={sections}
               selectedSectionIds={selectedSectionIds}
