@@ -22,13 +22,9 @@ function CopyButton({ text }: { text: string }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="shrink-0 rounded border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100"
-    >
+    <Button variant="secondary" onClick={handleCopy} className="shrink-0">
       {copied ? "Copied!" : "Copy"}
-    </button>
+    </Button>
   );
 }
 
@@ -58,21 +54,22 @@ function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
 
         {/* After */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between gap-4">
             <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
               After
             </span>
-            <CopyButton text={rewrite.rewrittenText} />
-          </div>
           <p className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-6 text-foreground h-full">
             {rewrite.rewrittenText}
           </p>
         </div>
       </div>
 
+      <div className="flex justify-end">
+        <CopyButton text={rewrite.rewrittenText} />
+      </div>
+
       {/* Notes */}
       {rewrite.notes && (
-        <p className="text-xs leading-5 text-zinc-500">
+        <p className="text-sm leading-5 text-zinc-500">
           <span className="font-semibold">Note: </span>
           {rewrite.notes}
         </p>
