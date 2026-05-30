@@ -67,9 +67,14 @@ function maybeCollapse(
 interface TailorPageProps {
   /** Resolved server-side from cookies; determines which access banner to show. */
   accessInfo?: AccessInfo;
+  /**
+   * True when an admin visits with ?mode=demo to preview the demo experience.
+   * Downgrades effective access to demo mode without clearing the session.
+   */
+  isForcedDemoMode?: boolean;
 }
 
-export function TailorPage({ accessInfo }: TailorPageProps) {
+export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageProps) {
   const {
     status,
     sections,
@@ -105,9 +110,17 @@ export function TailorPage({ accessInfo }: TailorPageProps) {
   );
 
   const isAdmin = accessInfo?.isAdmin === true;
-  const demoLimitReached = accessInfo?.demoLimitReached === true;
-  // Show the demo info banner to guests who still have requests remaining.
-  const showDemoBanner = !isAdmin && !demoLimitReached;
+  // Effective access: admin viewing ?mode=demo is treated as a demo user for
+  // banner and block logic, but the session itself is not cleared.
+  const effectiveIsAdmin = isAdmin && !isForcedDemoMode;
+  const demoLimitReached = !effectiveIsAdmin && (accessInfo?.demoLimitReached === true);
+  // Show the demo info banner to non-admin users who still have requests left.
+  const showDemoBanner = !effectiveIsAdmin && !demoLimitReached;
+
+  async function handleLogout() {
+    await fetch("/api/admin-logout", { method: "POST" });
+    window.location.href = "/";
+  }
 
   return (
     <div
@@ -115,14 +128,34 @@ export function TailorPage({ accessInfo }: TailorPageProps) {
       className="mx-auto flex w-full max-w-[1024px] flex-col gap-10 px-4 py-12 sm:px-6"
     >
       <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          CV Tailor
-        </h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            CV Tailor
+          </h1>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="mt-1 text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-600"
+            >
+              Log out
+            </button>
+          )}
+        </div>
         <p className="text-sm text-zinc-500">
           Upload your CV and a job description to get a global assessment and
           targeted section rewrites.
         </p>
       </header>
+
+      {isAdmin && isForcedDemoMode && (
+        <AlertBanner variant="amber">
+          Viewing as demo user.{" "}
+          <a href="/" className="underline underline-offset-2 hover:opacity-70">
+            Exit demo preview
+          </a>
+        </AlertBanner>
+      )}
 
       {showDemoBanner && (
         <AlertBanner variant="amber">
