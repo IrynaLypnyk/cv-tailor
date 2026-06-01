@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface AppShellProps {
   header: React.ReactNode;
@@ -13,9 +13,40 @@ interface AppShellProps {
  *
  * Desktop (md+): fixed-width sidebar on the left, fluid main content on the right.
  * Mobile: sticky top bar with a "Steps" button that opens a left-side drawer.
+ *
+ * Drawer animation uses a two-phase state pattern:
+ *   drawerMounted  — controls whether the drawer is in the DOM
+ *   drawerVisible  — controls the CSS transition target classes
+ * This lets CSS transitions run on enter (mount → visible) and exit (visible → unmount).
  */
 export function AppShell({ header, sidebar, children }: AppShellProps) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerMounted, setDrawerMounted] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+
+  function openDrawer() {
+    setDrawerMounted(true);
+  }
+
+  function closeDrawer() {
+    setDrawerVisible(false);
+  }
+
+  // Enter: once mounted, trigger the CSS transition on the next paint.
+  useEffect(() => {
+    if (drawerMounted) {
+      const id = requestAnimationFrame(() => setDrawerVisible(true));
+      return () => cancelAnimationFrame(id);
+    }
+  }, [drawerMounted]);
+
+  // Exit: once the transition classes are removed, wait for the transition to
+  // finish before unmounting the drawer from the DOM.
+  useEffect(() => {
+    if (drawerMounted && !drawerVisible) {
+      const id = setTimeout(() => setDrawerMounted(false), 300);
+      return () => clearTimeout(id);
+    }
+  }, [drawerMounted, drawerVisible]);
 
   return (
     <div data-component="AppShell" className="relative">
@@ -23,8 +54,8 @@ export function AppShell({ header, sidebar, children }: AppShellProps) {
       <div className="sticky top-0 z-30 flex items-center justify-end border-b border-zinc-100 bg-white/95 px-4 py-2 backdrop-blur-sm sm:px-6 md:hidden">
         <button
           type="button"
-          onClick={() => setDrawerOpen(true)}
-          aria-expanded={drawerOpen}
+          onClick={openDrawer}
+          aria-expanded={drawerVisible}
           aria-haspopup="dialog"
           className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-foreground"
         >
@@ -34,27 +65,36 @@ export function AppShell({ header, sidebar, children }: AppShellProps) {
       </div>
 
       {/* ── Mobile drawer ───────────────────────────────────────────────── */}
-      {drawerOpen && (
+      {drawerMounted && (
         <div
           role="dialog"
           aria-modal="true"
           aria-label="Navigation steps"
           className="fixed inset-0 z-40 md:hidden"
         >
-          {/* Backdrop */}
+          {/* Backdrop — fades in/out */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setDrawerOpen(false)}
+            onClick={closeDrawer}
+            className={[
+              "absolute inset-0 bg-black/40 transition-opacity duration-300",
+              drawerVisible ? "opacity-100" : "opacity-0",
+            ].join(" ")}
           />
 
-          {/* Drawer panel */}
-          <div className="absolute bottom-0 left-0 top-0 w-72 overflow-y-auto bg-white shadow-xl">
+          {/* Drawer panel — slides in/out from the left */}
+          <div
+            className={[
+              "absolute bottom-0 left-0 top-0 w-72 overflow-y-auto bg-white shadow-xl",
+              "transition-transform duration-300 ease-out",
+              drawerVisible ? "translate-x-0" : "-translate-x-full",
+            ].join(" ")}
+          >
             <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
               <span className="text-sm font-semibold text-foreground">Steps</span>
               <button
                 type="button"
-                onClick={() => setDrawerOpen(false)}
+                onClick={closeDrawer}
                 aria-label="Close steps"
                 className="rounded-md p-1 text-zinc-400 hover:text-foreground"
               >
