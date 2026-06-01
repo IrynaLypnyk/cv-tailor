@@ -3,66 +3,16 @@
 import { useState } from "react";
 import type { TailorStatus } from "@/hooks/useTailorCV";
 import { StepNav, type StepId } from "./StepNav";
-import { CollapsibleStep } from "./CollapsibleStep";
 
 interface AppSidebarProps {
   status: TailorStatus;
   onStepClick: (step: StepId) => void;
-  /**
-   * Content for the "Global CV assessment" collapsible panel.
-   * Omit until assessment data is available.
-   */
-  assessmentPanel?: React.ReactNode;
-  /**
-   * Content for the "Options & sections" collapsible panel.
-   * Omit until sections data is available.
-   */
-  optionsPanel?: React.ReactNode;
-  /**
-   * When true, collapsible panels default to closed (results are in the main area).
-   * When false, panels default to open (user is actively working through them).
-   */
-  isDone: boolean;
 }
 
-export function AppSidebar({
-  status,
-  onStepClick,
-  assessmentPanel,
-  optionsPanel,
-  isDone,
-}: AppSidebarProps) {
+export function AppSidebar({ status, onStepClick }: AppSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const hasPanels = assessmentPanel != null || optionsPanel != null;
-
-  const sidebarContent = (
-    <div className="flex flex-col gap-6">
-      <StepNav status={status} onStepClick={onStepClick} />
-
-      {hasPanels && (
-        <div className="flex flex-col gap-4 border-t border-zinc-100 pt-4">
-          {assessmentPanel != null && (
-            <CollapsibleStep
-              title="Global CV assessment"
-              defaultOpen={!isDone}
-            >
-              {assessmentPanel}
-            </CollapsibleStep>
-          )}
-
-          {optionsPanel != null && (
-            <CollapsibleStep
-              title="Options & sections"
-              defaultOpen={!isDone}
-            >
-              {optionsPanel}
-            </CollapsibleStep>
-          )}
-        </div>
-      )}
-    </div>
-  );
+  const sidebarContent = <StepNav status={status} onStepClick={onStepClick} />;
 
   return (
     <div data-component="AppSidebar">

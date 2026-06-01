@@ -10,6 +10,7 @@ import type { AccessInfo } from "@/lib/auth/session";
 import { AlertBanner } from "./AlertBanner";
 import { AppShell } from "./AppShell";
 import { AppSidebar } from "./AppSidebar";
+import { CollapsibleStep } from "./CollapsibleStep";
 import type { StepId } from "./StepNav";
 
 interface TailorPageProps {
@@ -118,38 +119,7 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   );
 
   const sidebar = (
-    <AppSidebar
-      status={status}
-      onStepClick={handleStepClick}
-      isDone={isDone}
-      assessmentPanel={
-        showGuidedFlow && assessment ? (
-          <GlobalAssessmentView
-            assessment={assessment}
-            confirmations={confirmations}
-            onUpdateConfirmation={updateConfirmation}
-          />
-        ) : undefined
-      }
-      optionsPanel={
-        showGuidedFlow && assessment ? (
-          <ConfirmAndGenerateForm
-            sections={sections}
-            selectedSectionIds={selectedSectionIds}
-            onToggleSection={toggleSection}
-            additionalContext={additionalContext}
-            onAdditionalContextChange={setAdditionalContext}
-            generateCoverLetter={generateCoverLetter}
-            onGenerateCoverLetterChange={setGenerateCoverLetter}
-            coverLetterContext={coverLetterContext}
-            onCoverLetterContextChange={setCoverLetterContext}
-            hasUnansweredConfirmations={hasUnansweredConfirmations}
-            onGenerate={generateRewrites}
-            isLoading={status === "generating"}
-          />
-        ) : undefined
-      }
-    />
+    <AppSidebar status={status} onStepClick={handleStepClick} />
   );
 
   return (
@@ -174,9 +144,60 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
           </div>
         )}
 
-        {showGuidedFlow && (
+        {showGuidedFlow && assessment && (
           <div className="flex flex-col gap-10">
+            {isDone ? (
+              <CollapsibleStep title="Global CV assessment" defaultOpen={false}>
+                <GlobalAssessmentView
+                  assessment={assessment}
+                  confirmations={confirmations}
+                  onUpdateConfirmation={updateConfirmation}
+                />
+              </CollapsibleStep>
+            ) : (
+              <GlobalAssessmentView
+                assessment={assessment}
+                confirmations={confirmations}
+                onUpdateConfirmation={updateConfirmation}
+              />
+            )}
+
+            {isDone ? (
+              <CollapsibleStep title="Options and sections" defaultOpen={false}>
+                <ConfirmAndGenerateForm
+                  sections={sections}
+                  selectedSectionIds={selectedSectionIds}
+                  onToggleSection={toggleSection}
+                  additionalContext={additionalContext}
+                  onAdditionalContextChange={setAdditionalContext}
+                  generateCoverLetter={generateCoverLetter}
+                  onGenerateCoverLetterChange={setGenerateCoverLetter}
+                  coverLetterContext={coverLetterContext}
+                  onCoverLetterContextChange={setCoverLetterContext}
+                  hasUnansweredConfirmations={hasUnansweredConfirmations}
+                  onGenerate={generateRewrites}
+                  isLoading={false}
+                />
+              </CollapsibleStep>
+            ) : (
+              <ConfirmAndGenerateForm
+                sections={sections}
+                selectedSectionIds={selectedSectionIds}
+                onToggleSection={toggleSection}
+                additionalContext={additionalContext}
+                onAdditionalContextChange={setAdditionalContext}
+                generateCoverLetter={generateCoverLetter}
+                onGenerateCoverLetterChange={setGenerateCoverLetter}
+                coverLetterContext={coverLetterContext}
+                onCoverLetterContextChange={setCoverLetterContext}
+                hasUnansweredConfirmations={hasUnansweredConfirmations}
+                onGenerate={generateRewrites}
+                isLoading={status === "generating"}
+              />
+            )}
+
             <StatusMessage status={status} error={null} />
+
             {isDone && (
               <SectionRewriteResult
                 rewrites={rewrites}
