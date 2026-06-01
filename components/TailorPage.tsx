@@ -44,13 +44,17 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
     setCoverLetterContext,
     generateRewrites,
     reset,
+    softReset,
   } = useTailorCV();
 
   const showForm =
     status === "idle" || status === "assessing" || status === "error";
-  const showGuidedFlow =
-    status === "confirming" || status === "generating" || status === "done";
-  const isDone = status === "done";
+  // Data-driven: keep guided flow visible even after a soft-reset back to the
+  // upload step so assessment and results are not lost.
+  const showGuidedFlow = assessment !== null;
+  // Data-driven: treat the workflow as "done" whenever results exist, so
+  // collapsible sections stay collapsed even when status returns to idle.
+  const isDone = rewrites.length > 0;
 
   const hasUnansweredConfirmations = confirmations.some(
     (c) => c.status === null
@@ -71,10 +75,9 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   }
 
   function handleStepClick(step: StepId) {
-    // "upload" navigates back to the start of the workflow.
-    // Completed "assessment" and "options" steps are accessible via their
-    // collapsible panels in the sidebar and need no additional action here.
-    if (step === "upload") reset();
+    // Navigate back to upload without wiping existing data so the file,
+    // job description, assessment, and results are all preserved.
+    if (step === "upload") softReset();
   }
 
   const header = (
@@ -125,24 +128,24 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   return (
     <div data-component="TailorPage">
       <AppShell header={header} sidebar={sidebar}>
-        {showForm && (
-          <div className="flex flex-col gap-10">
-            {demoLimitReached ? (
-              <AlertBanner variant="red">
-                <span className="font-semibold">Demo limit reached.</span>{" "}
-                You've used your 2 demo requests. Please try again in 3 days.
-              </AlertBanner>
-            ) : (
-              <>
-                <CVUploadForm
-                  onSubmit={assess}
-                  isLoading={status === "assessing"}
-                />
-                <StatusMessage status={status} error={error} />
-              </>
-            )}
-          </div>
-        )}
+        {/* Always mounted so CVUploadForm preserves its local file/JD state.
+            Visibility is toggled by CSS to avoid remount on step navigation. */}
+        <div className={showForm ? "flex flex-col gap-10" : "hidden"}>
+          {demoLimitReached ? (
+            <AlertBanner variant="red">
+              <span className="font-semibold">Demo limit reached.</span>{" "}
+              You've used your 2 demo requests. Please try again in 3 days.
+            </AlertBanner>
+          ) : (
+            <>
+              <CVUploadForm
+                onSubmit={assess}
+                isLoading={status === "assessing"}
+              />
+              <StatusMessage status={status} error={error} />
+            </>
+          )}
+        </div>
 
         {showGuidedFlow && assessment && (
           <div className="flex flex-col gap-10">
@@ -196,7 +199,9 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
               />
             )}
 
-            <StatusMessage status={status} error={null} />
+            {status === "generating" && (
+              <StatusMessage status={status} error={null} />
+            )}
 
             {isDone && (
               <SectionRewriteResult

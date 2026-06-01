@@ -45,7 +45,14 @@ export interface TailorCVActions {
   setGenerateCoverLetter: (value: boolean) => void;
   setCoverLetterContext: (patch: Partial<CoverLetterContext>) => void;
   generateRewrites: () => Promise<void>;
+  /** Full reset — clears all state back to initial values (used for "Start over"). */
   reset: () => void;
+  /**
+   * Soft reset — returns to the upload step without clearing existing assessment
+   * or results. Used when navigating back via the step nav so file/JD and any
+   * generated data are preserved.
+   */
+  softReset: () => void;
 }
 
 function extractApiError(data: unknown, fallback: string): string {
@@ -250,6 +257,11 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     setError(INITIAL_STATE.error);
   }
 
+  function softReset() {
+    setStatus("idle");
+    setError(null);
+  }
+
   return {
     status,
     sections,
@@ -271,5 +283,6 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     setCoverLetterContext,
     generateRewrites,
     reset,
+    softReset,
   };
 }
