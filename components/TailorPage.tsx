@@ -12,6 +12,10 @@ import { AlertBanner } from "./AlertBanner";
 import { AppShell } from "./AppShell";
 import { AppSidebar } from "./AppSidebar";
 import { Button } from "./Button";
+import { PageHeader } from "./PageHeader";
+import { PanelDivider } from "./PanelDivider";
+import { SectionHeader } from "./SectionHeader";
+import { StepPanel } from "./StepPanel";
 import type { StepId } from "./StepNav";
 
 interface TailorPageProps {
@@ -88,27 +92,21 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   }
 
   const header = (
-    <header className="flex flex-col gap-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            CV Tailor
-          </h1>
-          <p className="text-sm text-zinc-500">
-            AI-powered CV optimization for your dream job
-          </p>
-        </div>
-        {isAdmin && (
+    <PageHeader
+      title="CV Tailor"
+      description="AI-powered CV optimization for your dream job"
+      actions={
+        isAdmin ? (
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-1 shrink-0 text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-600"
+            className="mt-1 shrink-0 text-xs text-muted-subtle underline underline-offset-2 hover:text-muted-foreground"
           >
             Log out
           </button>
-        )}
-      </div>
-
+        ) : undefined
+      }
+    >
       {isAdmin && isForcedDemoMode && (
         <AlertBanner variant="amber">
           Viewing as demo user.{" "}
@@ -124,7 +122,7 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
           real AI requests. Full access is available only to the admin.
         </AlertBanner>
       )}
-    </header>
+    </PageHeader>
   );
 
   const sidebar = (
@@ -140,7 +138,7 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
       <AppShell header={header} sidebar={sidebar}>
         {/* Upload panel — always mounted to preserve local file/JD state.
             Visibility toggled by CSS so the form never remounts on tab switch. */}
-        <div className={activeStep === "upload" ? "flex flex-col gap-8" : "hidden"}>
+        <StepPanel hidden={activeStep !== "upload"}>
           {demoLimitReached ? (
             <AlertBanner variant="red">
               <span className="font-semibold">Demo limit reached.</span>{" "}
@@ -148,15 +146,11 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
             </AlertBanner>
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <h2 className="text-base font-semibold text-foreground">
-                  Upload documents
-                </h2>
-                <p className="text-sm text-zinc-500">
-                  Upload your CV and a job description to get a global assessment
-                  and targeted section rewrites.
-                </p>
-              </div>
+              <SectionHeader
+                level="page"
+                title="Upload documents"
+                description="Upload your CV and a job description to get a global assessment and targeted section rewrites."
+              />
               <CVUploadForm
                 onSubmit={assess}
                 isLoading={status === "assessing"}
@@ -164,17 +158,16 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
               <StatusMessage status={status} error={error} />
             </>
           )}
-        </div>
+        </StepPanel>
 
-        {/* Assessment panel */}
         {activeStep === "assessment" && assessment && (
-          <div className="flex flex-col gap-8">
+          <StepPanel>
             <GlobalAssessmentView
               assessment={assessment}
               confirmations={confirmations}
               onUpdateConfirmation={updateConfirmation}
             />
-            <div className="border-t border-zinc-100 pt-6">
+            <PanelDivider>
               <Button
                 variant="primary"
                 onClick={() => handleStepClick("options")}
@@ -182,13 +175,12 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
               >
                 Continue to Options &amp; sections →
               </Button>
-            </div>
-          </div>
+            </PanelDivider>
+          </StepPanel>
         )}
 
-        {/* Options & sections panel */}
         {activeStep === "options" && assessment && (
-          <div className="flex flex-col gap-8">
+          <StepPanel>
             <ConfirmAndGenerateForm
               sections={sections}
               selectedSectionIds={selectedSectionIds}
@@ -206,16 +198,17 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
             {status === "generating" && (
               <StatusMessage status={status} error={null} />
             )}
-          </div>
+          </StepPanel>
         )}
 
-        {/* Tailored CV panel */}
         {activeStep === "tailored-cv" && rewrites.length > 0 && (
-          <SectionRewriteResult
-            rewrites={rewrites}
-            coverLetter={coverLetter}
-            onReset={reset}
-          />
+          <StepPanel>
+            <SectionRewriteResult
+              rewrites={rewrites}
+              coverLetter={coverLetter}
+              onReset={reset}
+            />
+          </StepPanel>
         )}
       </AppShell>
     </div>
