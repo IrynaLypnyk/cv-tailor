@@ -1,20 +1,30 @@
 interface ButtonProps {
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "subtle" | "icon";
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   onClick?: () => void;
   /** Extra layout classes such as `self-start` or `w-full`. */
   className?: string;
+  /** Passed to the native button (e.g. `aria-expanded`, `aria-label`). */
+  "aria-expanded"?: boolean;
+  "aria-haspopup"?: boolean | "dialog" | "menu" | "listbox" | "tree" | "grid";
+  "aria-label"?: string;
 }
 
 const VARIANT_CLASSES: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
     "rounded-md bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40",
   secondary:
-    "rounded border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40",
+    "rounded border border-border bg-surface-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-40",
   ghost:
-    "text-sm text-zinc-500 underline underline-offset-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
+    "text-sm text-muted underline underline-offset-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
+  /** Compact control for toolbars and mobile chrome (e.g. “Steps” toggle). */
+  subtle:
+    "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
+  /** Minimal icon-only control (e.g. drawer close). */
+  icon:
+    "rounded-md p-1 text-muted-subtle transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
 };
 
 export function Button({
@@ -24,6 +34,7 @@ export function Button({
   disabled,
   onClick,
   className = "",
+  ...aria
 }: ButtonProps) {
   return (
     <button
@@ -32,6 +43,7 @@ export function Button({
       disabled={disabled}
       onClick={onClick}
       className={`${VARIANT_CLASSES[variant]} ${className}`.trim()}
+      {...aria}
     >
       {children}
     </button>

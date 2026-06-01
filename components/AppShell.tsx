@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "./Button";
 
 interface AppShellProps {
   header: React.ReactNode;
@@ -51,16 +52,15 @@ export function AppShell({ header, sidebar, children }: AppShellProps) {
     <div data-component="AppShell">
       {/* ── Mobile sticky top bar ───────────────────────────────────────── */}
       <div className="sticky top-0 z-30 flex items-center justify-end border-b border-zinc-100 bg-white/95 px-4 py-2 backdrop-blur-sm sm:px-6 md:hidden">
-        <button
-          type="button"
+        <Button
+          variant="subtle"
           onClick={openDrawer}
           aria-expanded={drawerVisible}
           aria-haspopup="dialog"
-          className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-foreground"
         >
           <span aria-hidden="true" className="text-base leading-none">☰</span>
           Steps
-        </button>
+        </Button>
       </div>
 
       {/* ── Mobile drawer ───────────────────────────────────────────────── */}
@@ -91,14 +91,13 @@ export function AppShell({ header, sidebar, children }: AppShellProps) {
           >
             <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
               <span className="text-sm font-semibold text-foreground">Steps</span>
-              <button
-                type="button"
+              <Button
+                variant="icon"
                 onClick={closeDrawer}
                 aria-label="Close steps"
-                className="rounded-md p-1 text-zinc-400 hover:text-foreground"
               >
                 ✕
-              </button>
+              </Button>
             </div>
             <div className="p-5">{sidebar}</div>
           </div>

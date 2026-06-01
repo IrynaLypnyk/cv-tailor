@@ -97,13 +97,13 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
       description="AI-powered CV optimization for your dream job"
       actions={
         isAdmin ? (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={handleLogout}
-            className="mt-1 shrink-0 text-xs text-muted-subtle underline underline-offset-2 hover:text-muted-foreground"
+            className="mt-1 shrink-0 text-xs"
           >
             Log out
-          </button>
+          </Button>
         ) : undefined
       }
     >
