@@ -8,29 +8,9 @@ import { SectionRewriteResult } from "./SectionRewriteResult";
 import { StatusMessage } from "./StatusMessage";
 import type { AccessInfo } from "@/lib/auth/session";
 import { AlertBanner } from "./AlertBanner";
-import { CollapsibleStep } from "./CollapsibleStep";
-
-// ---------------------------------------------------------------------------
-// Helper — wraps content in a CollapsibleStep only when collapsed is true
-// ---------------------------------------------------------------------------
-
-function maybeCollapse(
-  title: string,
-  collapsed: boolean,
-  children: React.ReactNode
-): React.ReactNode {
-  return collapsed ? (
-    <CollapsibleStep title={title} defaultOpen={false}>
-      {children}
-    </CollapsibleStep>
-  ) : (
-    children
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
+import { AppShell } from "./AppShell";
+import { AppSidebar } from "./AppSidebar";
+import type { StepId } from "./StepNav";
 
 interface TailorPageProps {
   /** Resolved server-side from cookies; determines which access banner to show. */
@@ -68,9 +48,7 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   const showForm =
     status === "idle" || status === "assessing" || status === "error";
   const showGuidedFlow =
-    status === "confirming" ||
-    status === "generating" ||
-    status === "done";
+    status === "confirming" || status === "generating" || status === "done";
   const isDone = status === "done";
 
   const hasUnansweredConfirmations = confirmations.some(
@@ -81,7 +59,8 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   // Effective access: admin viewing ?mode=demo is treated as a demo user for
   // banner and block logic, but the session itself is not cleared.
   const effectiveIsAdmin = isAdmin && !isForcedDemoMode;
-  const demoLimitReached = !effectiveIsAdmin && (accessInfo?.demoLimitReached === true);
+  const demoLimitReached =
+    !effectiveIsAdmin && accessInfo?.demoLimitReached === true;
   // Show the demo info banner to non-admin users who still have requests left.
   const showDemoBanner = !effectiveIsAdmin && !demoLimitReached;
 
@@ -90,31 +69,35 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
     window.location.href = "/";
   }
 
-  return (
-    <div
-      data-component="TailorPage"
-      className="mx-auto flex w-full max-w-[1024px] flex-col gap-10 px-4 py-12 sm:px-6"
-    >
-      <header className="flex flex-col gap-2">
-        <div className="flex items-start justify-between gap-4">
+  function handleStepClick(step: StepId) {
+    // "upload" navigates back to the start of the workflow.
+    // Completed "assessment" and "options" steps are accessible via their
+    // collapsible panels in the sidebar and need no additional action here.
+    if (step === "upload") reset();
+  }
+
+  const header = (
+    <header className="flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             CV Tailor
           </h1>
-          {isAdmin && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="mt-1 text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-600"
-            >
-              Log out
-            </button>
-          )}
+          <p className="text-sm text-zinc-500">
+            Upload your CV and a job description to get a global assessment and
+            targeted section rewrites.
+          </p>
         </div>
-        <p className="text-sm text-zinc-500">
-          Upload your CV and a job description to get a global assessment and
-          targeted section rewrites.
-        </p>
-      </header>
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="mt-1 shrink-0 text-xs text-zinc-400 underline underline-offset-2 hover:text-zinc-600"
+          >
+            Log out
+          </button>
+        )}
+      </div>
 
       {isAdmin && isForcedDemoMode && (
         <AlertBanner variant="amber">
@@ -131,68 +114,79 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
           real AI requests. Full access is available only to the admin.
         </AlertBanner>
       )}
+    </header>
+  );
 
-      {showForm && (
-        <>
-          {demoLimitReached ? (
-            <AlertBanner variant="red">
-              <span className="font-semibold">Demo limit reached.</span> You've used
-              your 2 demo requests. Please try again in 3 days.
-            </AlertBanner>
-          ) : (
-            <>
-              <CVUploadForm
-                onSubmit={assess}
-                isLoading={status === "assessing"}
+  const sidebar = (
+    <AppSidebar
+      status={status}
+      onStepClick={handleStepClick}
+      isDone={isDone}
+      assessmentPanel={
+        showGuidedFlow && assessment ? (
+          <GlobalAssessmentView
+            assessment={assessment}
+            confirmations={confirmations}
+            onUpdateConfirmation={updateConfirmation}
+          />
+        ) : undefined
+      }
+      optionsPanel={
+        showGuidedFlow && assessment ? (
+          <ConfirmAndGenerateForm
+            sections={sections}
+            selectedSectionIds={selectedSectionIds}
+            onToggleSection={toggleSection}
+            additionalContext={additionalContext}
+            onAdditionalContextChange={setAdditionalContext}
+            generateCoverLetter={generateCoverLetter}
+            onGenerateCoverLetterChange={setGenerateCoverLetter}
+            coverLetterContext={coverLetterContext}
+            onCoverLetterContextChange={setCoverLetterContext}
+            hasUnansweredConfirmations={hasUnansweredConfirmations}
+            onGenerate={generateRewrites}
+            isLoading={status === "generating"}
+          />
+        ) : undefined
+      }
+    />
+  );
+
+  return (
+    <div data-component="TailorPage">
+      <AppShell header={header} sidebar={sidebar}>
+        {showForm && (
+          <div className="flex flex-col gap-10">
+            {demoLimitReached ? (
+              <AlertBanner variant="red">
+                <span className="font-semibold">Demo limit reached.</span>{" "}
+                You've used your 2 demo requests. Please try again in 3 days.
+              </AlertBanner>
+            ) : (
+              <>
+                <CVUploadForm
+                  onSubmit={assess}
+                  isLoading={status === "assessing"}
+                />
+                <StatusMessage status={status} error={error} />
+              </>
+            )}
+          </div>
+        )}
+
+        {showGuidedFlow && (
+          <div className="flex flex-col gap-10">
+            <StatusMessage status={status} error={null} />
+            {isDone && (
+              <SectionRewriteResult
+                rewrites={rewrites}
+                coverLetter={coverLetter}
+                onReset={reset}
               />
-              <StatusMessage status={status} error={error} />
-            </>
-          )}
-        </>
-      )}
-
-      {showGuidedFlow && assessment && (
-        <>
-          {maybeCollapse(
-            "Global CV assessment",
-            isDone,
-            <GlobalAssessmentView
-              assessment={assessment}
-              confirmations={confirmations}
-              onUpdateConfirmation={updateConfirmation}
-            />
-          )}
-
-          {maybeCollapse(
-            "Options and sections",
-            isDone,
-            <ConfirmAndGenerateForm
-              sections={sections}
-              selectedSectionIds={selectedSectionIds}
-              onToggleSection={toggleSection}
-              additionalContext={additionalContext}
-              onAdditionalContextChange={setAdditionalContext}
-              generateCoverLetter={generateCoverLetter}
-              onGenerateCoverLetterChange={setGenerateCoverLetter}
-              coverLetterContext={coverLetterContext}
-              onCoverLetterContextChange={setCoverLetterContext}
-              hasUnansweredConfirmations={hasUnansweredConfirmations}
-              onGenerate={generateRewrites}
-              isLoading={status === "generating"}
-            />
-          )}
-
-          <StatusMessage status={status} error={null} />
-
-          {isDone && (
-            <SectionRewriteResult
-              rewrites={rewrites}
-              coverLetter={coverLetter}
-              onReset={reset}
-            />
-          )}
-        </>
-      )}
+            )}
+          </div>
+        )}
+      </AppShell>
     </div>
   );
 }
