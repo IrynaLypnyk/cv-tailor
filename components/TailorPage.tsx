@@ -95,8 +95,7 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
             CV Tailor
           </h1>
           <p className="text-sm text-zinc-500">
-            Upload your CV and a job description to get a global assessment and
-            targeted section rewrites.
+            AI-powered CV optimization for your dream job
           </p>
         </div>
         {isAdmin && (
@@ -149,6 +148,15 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
             </AlertBanner>
           ) : (
             <>
+              <div className="flex flex-col gap-1">
+                <h2 className="text-base font-semibold text-foreground">
+                  Upload documents
+                </h2>
+                <p className="text-sm text-zinc-500">
+                  Upload your CV and a job description to get a global assessment
+                  and targeted section rewrites.
+                </p>
+              </div>
               <CVUploadForm
                 onSubmit={assess}
                 isLoading={status === "assessing"}
