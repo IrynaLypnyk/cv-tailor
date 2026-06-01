@@ -6,6 +6,7 @@ import type {
   ConfirmationStatus,
   EvidenceSource,
 } from "@/lib/llm/types";
+import { Select } from "./Select";
 import { Textarea } from "./Textarea";
 
 interface UpdateConfirmationPatch {
@@ -171,15 +172,15 @@ export function GlobalAssessmentView({
                         >
                           Experience context / source
                         </label>
-                        <select
+                        <Select
                           id={`evidence-source-${item.id}`}
+                          fieldSize="sm"
                           value={item.evidenceSource ?? ""}
                           onChange={(e) =>
                             onUpdateConfirmation(item.id, {
                               evidenceSource: (e.target.value as EvidenceSource) || undefined,
                             })
                           }
-                          className="w-full rounded-md border border-zinc-300 bg-background px-3 py-2 text-sm text-foreground focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
                         >
                           <option value="">Select source…</option>
                           {EVIDENCE_SOURCE_OPTIONS.map(({ value, label }) => (
@@ -187,7 +188,7 @@ export function GlobalAssessmentView({
                               {label}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                       </div>
 
                       {/* Evidence note textarea */}

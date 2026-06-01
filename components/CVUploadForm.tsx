@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "./Button";
+import { FileInput } from "./FileInput";
 import { Textarea } from "./Textarea";
 import { FormField } from "./FormField";
 
@@ -13,7 +14,6 @@ interface CVUploadFormProps {
 export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,14 +30,11 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
       className="flex flex-col gap-6"
     >
       <FormField htmlFor="cv-upload" label="CV file" hint="(.docx only)">
-        <input
+        <FileInput
           id="cv-upload"
-          ref={fileInputRef}
-          type="file"
           accept=".docx"
           disabled={isLoading}
           onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm text-foreground file:mr-4 file:cursor-pointer file:rounded-md file:border file:border-zinc-300 file:bg-zinc-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
         />
         {cvFile && (
           <p className="text-xs text-zinc-500">Selected: {cvFile.name}</p>
