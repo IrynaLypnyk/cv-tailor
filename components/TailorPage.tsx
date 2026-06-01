@@ -11,6 +11,7 @@ import type { AccessInfo } from "@/lib/auth/session";
 import { AlertBanner } from "./AlertBanner";
 import { AppShell } from "./AppShell";
 import { AppSidebar } from "./AppSidebar";
+import { Button } from "./Button";
 import type { StepId } from "./StepNav";
 
 interface TailorPageProps {
@@ -159,11 +160,22 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
 
         {/* Assessment panel */}
         {activeStep === "assessment" && assessment && (
-          <GlobalAssessmentView
-            assessment={assessment}
-            confirmations={confirmations}
-            onUpdateConfirmation={updateConfirmation}
-          />
+          <div className="flex flex-col gap-8">
+            <GlobalAssessmentView
+              assessment={assessment}
+              confirmations={confirmations}
+              onUpdateConfirmation={updateConfirmation}
+            />
+            <div className="border-t border-zinc-100 pt-6">
+              <Button
+                variant="primary"
+                onClick={() => handleStepClick("options")}
+                className="self-start"
+              >
+                Continue to Options &amp; sections →
+              </Button>
+            </div>
+          </div>
         )}
 
         {/* Options & sections panel */}
