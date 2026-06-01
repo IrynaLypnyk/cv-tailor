@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useTailorCV } from "@/hooks/useTailorCV";
 import { CVUploadForm } from "./CVUploadForm";
 import { GlobalAssessmentView } from "./GlobalAssessmentView";
@@ -9,38 +8,7 @@ import { SectionRewriteResult } from "./SectionRewriteResult";
 import { StatusMessage } from "./StatusMessage";
 import type { AccessInfo } from "@/lib/auth/session";
 import { AlertBanner } from "./AlertBanner";
-
-// ---------------------------------------------------------------------------
-// Local collapsible wrapper — only used on this page
-// ---------------------------------------------------------------------------
-
-function CollapsibleStep({
-  title,
-  defaultOpen = true,
-  children,
-}: {
-  title: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-
-  return (
-    <div className="flex flex-col gap-0">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 border-b border-zinc-200 pb-3 text-left"
-      >
-        <span className="text-sm font-semibold text-foreground">{title}</span>
-        <span className="shrink-0 text-xs text-zinc-400">
-          {open ? "Hide" : "Show"}
-        </span>
-      </button>
-      {open && <div className="pt-6">{children}</div>}
-    </div>
-  );
-}
+import { CollapsibleStep } from "./CollapsibleStep";
 
 // ---------------------------------------------------------------------------
 // Helper — wraps content in a CollapsibleStep only when collapsed is true
