@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTailorCV } from "@/hooks/useTailorCV";
 import { CVUploadForm } from "./CVUploadForm";
 import { GlobalAssessmentView } from "./GlobalAssessmentView";
@@ -10,7 +11,6 @@ import type { AccessInfo } from "@/lib/auth/session";
 import { AlertBanner } from "./AlertBanner";
 import { AppShell } from "./AppShell";
 import { AppSidebar } from "./AppSidebar";
-import { CollapsibleStep } from "./CollapsibleStep";
 import type { StepId } from "./StepNav";
 
 interface TailorPageProps {
@@ -44,17 +44,24 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
     setCoverLetterContext,
     generateRewrites,
     reset,
-    softReset,
   } = useTailorCV();
 
-  const showForm =
-    status === "idle" || status === "assessing" || status === "error";
-  // Data-driven: keep guided flow visible even after a soft-reset back to the
-  // upload step so assessment and results are not lost.
-  const showGuidedFlow = assessment !== null;
-  // Data-driven: treat the workflow as "done" whenever results exist, so
-  // collapsible sections stay collapsed even when status returns to idle.
-  const isDone = rewrites.length > 0;
+  // Active tab — controls which single content panel is visible.
+  // Pure UI concern, decoupled from workflow status.
+  const [activeStep, setActiveStep] = useState<StepId>("upload");
+
+  // Auto-advance to the relevant tab when the workflow reaches key milestones.
+  useEffect(() => {
+    if (status === "confirming") setActiveStep("assessment");
+    if (status === "done") setActiveStep("tailored-cv");
+  }, [status]);
+
+  // Furthest step reached — derived from data presence, never goes backward on
+  // tab navigation. Resets naturally when assess() clears assessment/rewrites.
+  const maxReachedStep: StepId =
+    rewrites.length > 0 ? "tailored-cv"
+    : assessment !== null ? "options"
+    : "upload";
 
   const hasUnansweredConfirmations = confirmations.some(
     (c) => c.status === null
@@ -75,9 +82,8 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   }
 
   function handleStepClick(step: StepId) {
-    // Navigate back to upload without wiping existing data so the file,
-    // job description, assessment, and results are all preserved.
-    if (step === "upload") softReset();
+    // Pure tab switch — no state or data reset.
+    setActiveStep(step);
   }
 
   const header = (
@@ -122,15 +128,19 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   );
 
   const sidebar = (
-    <AppSidebar status={status} onStepClick={handleStepClick} />
+    <AppSidebar
+      currentStep={activeStep}
+      maxReachedStep={maxReachedStep}
+      onStepClick={handleStepClick}
+    />
   );
 
   return (
     <div data-component="TailorPage">
       <AppShell header={header} sidebar={sidebar}>
-        {/* Always mounted so CVUploadForm preserves its local file/JD state.
-            Visibility is toggled by CSS to avoid remount on step navigation. */}
-        <div className={showForm ? "flex flex-col gap-10" : "hidden"}>
+        {/* Upload panel — always mounted to preserve local file/JD state.
+            Visibility toggled by CSS so the form never remounts on tab switch. */}
+        <div className={activeStep === "upload" ? "flex flex-col gap-8" : "hidden"}>
           {demoLimitReached ? (
             <AlertBanner variant="red">
               <span className="font-semibold">Demo limit reached.</span>{" "}
@@ -147,70 +157,45 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
           )}
         </div>
 
-        {showGuidedFlow && assessment && (
-          <div className="flex flex-col gap-10">
-            {isDone ? (
-              <CollapsibleStep title="Global CV assessment" defaultOpen={false}>
-                <GlobalAssessmentView
-                  assessment={assessment}
-                  confirmations={confirmations}
-                  onUpdateConfirmation={updateConfirmation}
-                />
-              </CollapsibleStep>
-            ) : (
-              <GlobalAssessmentView
-                assessment={assessment}
-                confirmations={confirmations}
-                onUpdateConfirmation={updateConfirmation}
-              />
-            )}
+        {/* Assessment panel */}
+        {activeStep === "assessment" && assessment && (
+          <GlobalAssessmentView
+            assessment={assessment}
+            confirmations={confirmations}
+            onUpdateConfirmation={updateConfirmation}
+          />
+        )}
 
-            {isDone ? (
-              <CollapsibleStep title="Options and sections" defaultOpen={false}>
-                <ConfirmAndGenerateForm
-                  sections={sections}
-                  selectedSectionIds={selectedSectionIds}
-                  onToggleSection={toggleSection}
-                  additionalContext={additionalContext}
-                  onAdditionalContextChange={setAdditionalContext}
-                  generateCoverLetter={generateCoverLetter}
-                  onGenerateCoverLetterChange={setGenerateCoverLetter}
-                  coverLetterContext={coverLetterContext}
-                  onCoverLetterContextChange={setCoverLetterContext}
-                  hasUnansweredConfirmations={hasUnansweredConfirmations}
-                  onGenerate={generateRewrites}
-                  isLoading={false}
-                />
-              </CollapsibleStep>
-            ) : (
-              <ConfirmAndGenerateForm
-                sections={sections}
-                selectedSectionIds={selectedSectionIds}
-                onToggleSection={toggleSection}
-                additionalContext={additionalContext}
-                onAdditionalContextChange={setAdditionalContext}
-                generateCoverLetter={generateCoverLetter}
-                onGenerateCoverLetterChange={setGenerateCoverLetter}
-                coverLetterContext={coverLetterContext}
-                onCoverLetterContextChange={setCoverLetterContext}
-                hasUnansweredConfirmations={hasUnansweredConfirmations}
-                onGenerate={generateRewrites}
-                isLoading={status === "generating"}
-              />
-            )}
-
+        {/* Options & sections panel */}
+        {activeStep === "options" && assessment && (
+          <div className="flex flex-col gap-8">
+            <ConfirmAndGenerateForm
+              sections={sections}
+              selectedSectionIds={selectedSectionIds}
+              onToggleSection={toggleSection}
+              additionalContext={additionalContext}
+              onAdditionalContextChange={setAdditionalContext}
+              generateCoverLetter={generateCoverLetter}
+              onGenerateCoverLetterChange={setGenerateCoverLetter}
+              coverLetterContext={coverLetterContext}
+              onCoverLetterContextChange={setCoverLetterContext}
+              hasUnansweredConfirmations={hasUnansweredConfirmations}
+              onGenerate={generateRewrites}
+              isLoading={status === "generating"}
+            />
             {status === "generating" && (
               <StatusMessage status={status} error={null} />
             )}
-
-            {isDone && (
-              <SectionRewriteResult
-                rewrites={rewrites}
-                coverLetter={coverLetter}
-                onReset={reset}
-              />
-            )}
           </div>
+        )}
+
+        {/* Tailored CV panel */}
+        {activeStep === "tailored-cv" && rewrites.length > 0 && (
+          <SectionRewriteResult
+            rewrites={rewrites}
+            coverLetter={coverLetter}
+            onReset={reset}
+          />
         )}
       </AppShell>
     </div>
