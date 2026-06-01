@@ -1,6 +1,7 @@
 "use client";
 
 import type { CoverLetterContext } from "@/lib/llm/types";
+import { Card } from "./Card";
 import { FormField } from "./FormField";
 import { TextInput } from "./TextInput";
 import { Textarea } from "./Textarea";
@@ -17,11 +18,12 @@ export function CoverLetterContextFields({
   disabled,
 }: CoverLetterContextFieldsProps) {
   return (
-    <div
+    <Card
+      padding="sm"
+      className="flex flex-col gap-5"
       data-component="CoverLetterContextFields"
-      className="flex flex-col gap-5 rounded-md border border-zinc-200 px-4 py-4"
     >
-      <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted-subtle">
         Cover letter context
       </p>
 
@@ -65,7 +67,7 @@ export function CoverLetterContextFields({
           <span className="text-sm font-medium text-foreground">
             The visible company appears to be a recruiter or agency, not the hiring company
           </span>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-muted">
             If selected, the cover letter will not refer to that company as the employer.
           </span>
         </div>
@@ -120,6 +122,6 @@ export function CoverLetterContextFields({
           onChange={(e) => onChange({ additionalNotes: e.target.value || undefined })}
         />
       </FormField>
-    </div>
+    </Card>
   );
 }

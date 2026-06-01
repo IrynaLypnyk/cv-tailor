@@ -2,8 +2,10 @@
 
 import type { CVSection, CoverLetterContext } from "@/lib/llm/types";
 import { Button } from "./Button";
-import { Textarea } from "./Textarea";
+import { Card } from "./Card";
 import { CoverLetterContextFields } from "./CoverLetterContextFields";
+import { Subsection } from "./SectionHeader";
+import { Textarea } from "./Textarea";
 
 interface ConfirmAndGenerateFormProps {
   sections: CVSection[];
@@ -50,27 +52,20 @@ export function ConfirmAndGenerateForm({
 
   return (
     <div data-component="ConfirmAndGenerateForm" className="flex flex-col gap-8">
-      {/* Section selection */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-0.5">
-          <h3 className="text-sm font-semibold text-foreground">
-            Sections to rewrite
-          </h3>
-          <p className="text-xs text-zinc-500">
-            The most relevant sections are pre-selected. Adjust as needed.
-          </p>
-        </div>
+      <Subsection
+        title="Sections to rewrite"
+        description="The most relevant sections are pre-selected. Adjust as needed."
+      >
         <ul className="flex flex-col gap-2">
           {sections.map((section) => {
             const isSelected = selectedSectionIds.includes(section.id);
             return (
               <li key={section.id}>
-                <label
-                  className={`flex cursor-pointer items-start gap-3 rounded-md border px-4 py-3 transition-colors ${
-                    isSelected
-                      ? "border-zinc-400 bg-zinc-50"
-                      : "border-zinc-200 bg-background"
-                  }`}
+                <Card
+                  as="label"
+                  padding="sm"
+                  selected={isSelected}
+                  className="flex cursor-pointer items-start gap-3 transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -82,23 +77,22 @@ export function ConfirmAndGenerateForm({
                   <span className="text-sm font-medium text-foreground">
                     {section.title}
                   </span>
-                </label>
+                </Card>
               </li>
             );
           })}
         </ul>
-      </div>
+      </Subsection>
 
-      {/* Additional context */}
       <div className="flex flex-col gap-2">
         <label
           htmlFor="additional-context"
           className="text-sm font-semibold text-foreground"
         >
           Additional CV context{" "}
-          <span className="font-normal text-zinc-500">(optional)</span>
+          <span className="font-normal text-muted">(optional)</span>
         </label>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-muted">
           Add any truthful experience or details not visible in your uploaded CV. The AI will use this carefully and will not exaggerate beyond what you write.
         </p>
         <Textarea
@@ -111,7 +105,6 @@ export function ConfirmAndGenerateForm({
         />
       </div>
 
-      {/* Cover letter */}
       <div className="flex flex-col gap-4">
         <label className="flex cursor-pointer items-center gap-3">
           <input
@@ -135,7 +128,6 @@ export function ConfirmAndGenerateForm({
         )}
       </div>
 
-      {/* Generate button */}
       <Button variant="primary" disabled={isDisabled} onClick={onGenerate} className="self-start">
         {buttonLabel}
       </Button>

@@ -3,10 +3,8 @@
 import { useState } from "react";
 import type { SectionRewrite } from "@/lib/llm/types";
 import { Button } from "./Button";
-
-// ---------------------------------------------------------------------------
-// Copy button with transient "Copied!" confirmation
-// ---------------------------------------------------------------------------
+import { Card } from "./Card";
+import { SectionHeader } from "./SectionHeader";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -28,36 +26,30 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Per-section rewrite card
-// ---------------------------------------------------------------------------
-
 function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
   return (
-    <div
+    <Card
+      padding="md"
+      className="flex flex-col gap-5"
       data-component="RewriteCard"
-      className="flex flex-col gap-5 rounded-md border border-zinc-200 px-5 py-5"
     >
       <h3 className="text-sm font-semibold text-foreground">{rewrite.title}</h3>
 
-      {/* Side-by-side comparison: stacked on mobile, two columns on sm+ */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {/* Before */}
         <div className="flex flex-col gap-2">
-          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-subtle">
             Before
           </span>
-          <p className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-background px-4 py-3 text-sm leading-6 text-zinc-500 h-full">
+          <p className="h-full whitespace-pre-wrap rounded-md border border-border bg-background px-4 py-3 text-sm leading-6 text-muted">
             {rewrite.originalText}
           </p>
         </div>
 
-        {/* After */}
         <div className="flex flex-col gap-2">
-            <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-              After
-            </span>
-          <p className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-6 text-foreground h-full">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-subtle">
+            After
+          </span>
+          <p className="h-full whitespace-pre-wrap rounded-md border border-border bg-surface-muted px-4 py-3 text-sm leading-6 text-foreground">
             {rewrite.rewrittenText}
           </p>
         </div>
@@ -67,26 +59,22 @@ function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
         <CopyButton text={rewrite.rewrittenText} />
       </div>
 
-      {/* Notes */}
       {rewrite.notes && (
-        <p className="text-sm leading-5 text-zinc-500">
+        <p className="text-sm leading-5 text-muted">
           <span className="font-semibold">Note: </span>
           {rewrite.notes}
         </p>
       )}
-    </div>
+    </Card>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Cover letter card
-// ---------------------------------------------------------------------------
-
 function CoverLetterCard({ text }: { text: string }) {
   return (
-    <div
+    <Card
+      padding="md"
+      className="flex flex-col gap-5"
       data-component="CoverLetterCard"
-      className="flex flex-col gap-5 rounded-md border border-zinc-200 px-5 py-5"
     >
       <div className="flex items-center justify-between gap-4">
         <h3 className="text-sm font-semibold text-foreground">Cover letter</h3>
@@ -95,13 +83,9 @@ function CoverLetterCard({ text }: { text: string }) {
       <p className="whitespace-pre-wrap text-sm leading-6 text-foreground">
         {text}
       </p>
-    </div>
+    </Card>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Page-level result wrapper
-// ---------------------------------------------------------------------------
 
 interface SectionRewriteResultProps {
   rewrites: SectionRewrite[];
@@ -116,17 +100,18 @@ export function SectionRewriteResult({
 }: SectionRewriteResultProps) {
   return (
     <div data-component="SectionRewriteResult" className="flex flex-col gap-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-foreground">
-          Tailored CV sections
-        </h2>
-        <Button variant="ghost" onClick={onReset}>
-          Start again
-        </Button>
-      </div>
+      <SectionHeader
+        level="page"
+        title="Tailored CV sections"
+        actions={
+          <Button variant="ghost" onClick={onReset}>
+            Start again
+          </Button>
+        }
+      />
 
       {rewrites.length === 0 ? (
-        <p className="text-sm text-zinc-500">No rewrites were generated.</p>
+        <p className="text-sm text-muted">No rewrites were generated.</p>
       ) : (
         <ul className="flex flex-col gap-6">
           {rewrites.map((rewrite) => (
