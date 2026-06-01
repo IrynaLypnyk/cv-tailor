@@ -18,5 +18,7 @@ export default async function Home({
   const [cookieStore, params] = await Promise.all([cookies(), searchParams]);
   const accessInfo = getAccessInfo(cookieStore);
   const isForcedDemoMode = accessInfo.isAdmin && params.mode === "demo";
-  return <TailorPage accessInfo={accessInfo} isForcedDemoMode={isForcedDemoMode} />;
+  return (
+    <TailorPage accessInfo={accessInfo} isForcedDemoMode={isForcedDemoMode} />
+  );
 }

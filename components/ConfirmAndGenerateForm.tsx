@@ -51,7 +51,10 @@ export function ConfirmAndGenerateForm({
   }
 
   return (
-    <div data-component="ConfirmAndGenerateForm" className="flex flex-col gap-8">
+    <div
+      data-component="ConfirmAndGenerateForm"
+      className="flex flex-col gap-8"
+    >
       <Subsection
         title="Sections to rewrite"
         description="The most relevant sections are pre-selected. Adjust as needed."
@@ -93,7 +96,9 @@ export function ConfirmAndGenerateForm({
           <span className="font-normal text-muted">(optional)</span>
         </label>
         <p className="text-xs text-muted">
-          Add any truthful experience or details not visible in your uploaded CV. The AI will use this carefully and will not exaggerate beyond what you write.
+          Add any truthful experience or details not visible in your uploaded
+          CV. The AI will use this carefully and will not exaggerate beyond what
+          you write.
         </p>
         <Textarea
           id="additional-context"
@@ -128,7 +133,12 @@ export function ConfirmAndGenerateForm({
         )}
       </div>
 
-      <Button variant="primary" disabled={isDisabled} onClick={onGenerate} className="self-start">
+      <Button
+        variant="primary"
+        disabled={isDisabled}
+        onClick={onGenerate}
+        className="self-start"
+      >
         {buttonLabel}
       </Button>
     </div>

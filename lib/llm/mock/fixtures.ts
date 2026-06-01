@@ -55,7 +55,8 @@ export const MOCK_CV_SECTIONS: CVSection[] = [
     id: "education",
     type: "education",
     title: "Education",
-    originalText: "BSc Computer Science, University of Bristol, 2017–2020, First Class Honours.",
+    originalText:
+      "BSc Computer Science, University of Bristol, 2017–2020, First Class Honours.",
     selected: false,
   },
 ];
@@ -78,7 +79,8 @@ export const MOCK_GLOBAL_ASSESSMENT: GlobalAssessment = {
     {
       id: "conf-aws",
       skill: "AWS — EC2, RDS, or similar cloud services",
-      context: "The JD requires ownership of cloud deployments. CV lists only 'basic AWS'.",
+      context:
+        "The JD requires ownership of cloud deployments. CV lists only 'basic AWS'.",
       status: null,
     },
     {
@@ -101,7 +103,10 @@ export const MOCK_GLOBAL_ASSESSMENT: GlobalAssessment = {
 // ---------------------------------------------------------------------------
 
 /** Canned rewritten text keyed by section id. */
-const MOCK_REWRITTEN_TEXTS: Record<string, { rewrittenText: string; notes?: string }> = {
+const MOCK_REWRITTEN_TEXTS: Record<
+  string,
+  { rewrittenText: string; notes?: string }
+> = {
   summary: {
     rewrittenText:
       "Full-stack engineer with 4 years of production experience delivering scalable React/Node.js applications. Proven track record of improving API performance, mentoring junior engineers, and contributing to high-output agile teams.",
@@ -117,11 +122,14 @@ const MOCK_REWRITTEN_TEXTS: Record<string, { rewrittenText: string; notes?: stri
   skills: {
     rewrittenText:
       "Languages: TypeScript (primary), JavaScript, Python\nFrameworks: React, Next.js, Express.js\nTesting: Jest, React Testing Library (unit & integration)\nInfrastructure: Docker, AWS (EC2, S3) — production experience\nTooling: Git, GitHub Actions",
-    notes: "Testing and infrastructure sections expanded; AWS clarified as production experience.",
+    notes:
+      "Testing and infrastructure sections expanded; AWS clarified as production experience.",
   },
 };
 
-export function mockGenerateSectionRewrites(input: RewriteInput): SectionRewrite[] {
+export function mockGenerateSectionRewrites(
+  input: RewriteInput
+): SectionRewrite[] {
   return input.sections.map((section) => {
     const canned = MOCK_REWRITTEN_TEXTS[section.id];
     return {

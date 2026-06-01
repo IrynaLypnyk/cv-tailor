@@ -167,7 +167,8 @@ export interface RewriteInput {
 
 const STATUS_LABELS: Record<NonNullable<ConfirmationItem["status"]>, string> = {
   direct: "User confirmed: I have direct experience",
-  similar: "User confirmed: I have related / similar experience (do not claim direct experience)",
+  similar:
+    "User confirmed: I have related / similar experience (do not claim direct experience)",
   none: "User confirmed: I do not have this (do not include in rewrite)",
 };
 

@@ -23,12 +23,7 @@ function cardClassName(
     ? "border-border-strong bg-surface-muted"
     : "border-border bg-background";
 
-  return [
-    "rounded-md border",
-    surface,
-    PADDING_CLASSES[padding],
-    className,
-  ]
+  return ["rounded-md border", surface, PADDING_CLASSES[padding], className]
     .filter(Boolean)
     .join(" ");
 }

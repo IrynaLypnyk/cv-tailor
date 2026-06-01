@@ -18,5 +18,7 @@ export function fieldClassName(
   fieldSize: FieldSize = "md",
   extra?: string
 ): string {
-  return [FIELD_BASE, FIELD_PADDING[fieldSize], extra].filter(Boolean).join(" ");
+  return [FIELD_BASE, FIELD_PADDING[fieldSize], extra]
+    .filter(Boolean)
+    .join(" ");
 }

@@ -50,8 +50,7 @@ const DEMO_TTL_MS = 3 * 24 * 60 * 60 * 1000;
  * Omitted in development because localhost runs over plain HTTP and most
  * browsers refuse Secure cookies on non-HTTPS origins.
  */
-const SECURE_FLAG =
-  process.env.NODE_ENV === "production" ? "; Secure" : "";
+const SECURE_FLAG = process.env.NODE_ENV === "production" ? "; Secure" : "";
 
 // ---------------------------------------------------------------------------
 // Admin session — HMAC-signed stateless token
@@ -103,7 +102,10 @@ export function verifyAdminToken(token: string): boolean {
   const expectedSig = hmac(payload, getSessionSecret());
   try {
     // Both buffers must be the same length for timingSafeEqual to work.
-    return timingSafeEqual(Buffer.from(sig, "hex"), Buffer.from(expectedSig, "hex"));
+    return timingSafeEqual(
+      Buffer.from(sig, "hex"),
+      Buffer.from(expectedSig, "hex")
+    );
   } catch {
     // Buffer.from will throw if the hex string has an odd length (tampered).
     return false;
@@ -229,9 +231,7 @@ export interface AccessInfo {
  * is available. For API route handlers, use getAdminTokenFromRequest /
  * getDemoCounterFromRequest instead.
  */
-export function getAccessInfo(
-  cookieStore: ReadonlyRequestCookies
-): AccessInfo {
+export function getAccessInfo(cookieStore: ReadonlyRequestCookies): AccessInfo {
   const adminToken = cookieStore.get(ADMIN_COOKIE)?.value;
   if (adminToken && verifyAdminToken(adminToken)) {
     return { isAdmin: true, demoRequestsUsed: 0, demoLimitReached: false };
@@ -240,9 +240,7 @@ export function getAccessInfo(
   const counter = readDemoCounter(cookieStore);
   // Treat an expired counter as 0 requests used.
   const used =
-    counter && Date.now() - counter.firstUsed < DEMO_TTL_MS
-      ? counter.count
-      : 0;
+    counter && Date.now() - counter.firstUsed < DEMO_TTL_MS ? counter.count : 0;
 
   return {
     isAdmin: false,

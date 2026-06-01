@@ -40,7 +40,9 @@ async function callOpenAI(
     parsed === null ||
     !Array.isArray((parsed as Record<string, unknown>).sections)
   ) {
-    throw new Error("Unexpected response shape from OpenAI: missing sections array");
+    throw new Error(
+      "Unexpected response shape from OpenAI: missing sections array"
+    );
   }
 
   return (parsed as { sections: CVSection[] }).sections;

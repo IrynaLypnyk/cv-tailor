@@ -23,8 +23,7 @@ const VARIANT_CLASSES: Record<NonNullable<ButtonProps["variant"]>, string> = {
   subtle:
     "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
   /** Minimal icon-only control (e.g. drawer close). */
-  icon:
-    "rounded-md p-1 text-muted-subtle transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
+  icon: "rounded-md p-1 text-muted-subtle transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
 };
 
 export function Button({

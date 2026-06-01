@@ -1,7 +1,4 @@
-import {
-  fieldClassName,
-  type FieldSize,
-} from "@/lib/ui/field-styles";
+import { fieldClassName, type FieldSize } from "@/lib/ui/field-styles";
 
 type SelectProps = React.ComponentPropsWithoutRef<"select"> & {
   /** `"md"` (default) uses px-4 py-3; `"sm"` uses px-3 py-2 for compact contexts. */

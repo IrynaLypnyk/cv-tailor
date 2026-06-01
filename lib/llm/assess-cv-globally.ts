@@ -48,20 +48,22 @@ async function callOpenAI(
     !Array.isArray(data.nonActionableGaps) ||
     !Array.isArray(data.recommendedSectionIds)
   ) {
-    throw new Error("Unexpected response shape from OpenAI: missing assessment fields");
+    throw new Error(
+      "Unexpected response shape from OpenAI: missing assessment fields"
+    );
   }
 
   return {
     strongMatches: data.strongMatches as string[],
     underEmphasized: data.underEmphasized as string[],
-    needsConfirmation: (data.needsConfirmation as Array<Record<string, unknown>>).map(
-      (item) => ({
-        id: String(item.id ?? ""),
-        skill: String(item.skill ?? ""),
-        context: String(item.context ?? ""),
-        status: null,
-      })
-    ),
+    needsConfirmation: (
+      data.needsConfirmation as Array<Record<string, unknown>>
+    ).map((item) => ({
+      id: String(item.id ?? ""),
+      skill: String(item.skill ?? ""),
+      context: String(item.context ?? ""),
+      status: null,
+    })),
     nonActionableGaps: data.nonActionableGaps as string[],
     recommendedSectionIds: data.recommendedSectionIds as string[],
   };

@@ -52,7 +52,12 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
         />
       </FormField>
 
-      <Button variant="primary" type="submit" disabled={isDisabled} className="self-start">
+      <Button
+        variant="primary"
+        type="submit"
+        disabled={isDisabled}
+        className="self-start"
+      >
         {isLoading ? "Tailoring..." : "Tailor CV"}
       </Button>
     </form>

@@ -28,7 +28,10 @@ interface TailorPageProps {
   isForcedDemoMode?: boolean;
 }
 
-export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageProps) {
+export function TailorPage({
+  accessInfo,
+  isForcedDemoMode = false,
+}: TailorPageProps) {
   const {
     status,
     sections,
@@ -64,9 +67,11 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
   // Furthest step reached — derived from data presence, never goes backward on
   // tab navigation. Resets naturally when assess() clears assessment/rewrites.
   const maxReachedStep: StepId =
-    rewrites.length > 0 ? "tailored-cv"
-    : assessment !== null ? "options"
-    : "upload";
+    rewrites.length > 0
+      ? "tailored-cv"
+      : assessment !== null
+        ? "options"
+        : "upload";
 
   const hasUnansweredConfirmations = confirmations.some(
     (c) => c.status === null
@@ -141,8 +146,8 @@ export function TailorPage({ accessInfo, isForcedDemoMode = false }: TailorPageP
         <StepPanel hidden={activeStep !== "upload"}>
           {demoLimitReached ? (
             <AlertBanner variant="red">
-              <span className="font-semibold">Demo limit reached.</span>{" "}
-              You've used your 2 demo requests. Please try again in 3 days.
+              <span className="font-semibold">Demo limit reached.</span> You've
+              used your 2 demo requests. Please try again in 3 days.
             </AlertBanner>
           ) : (
             <>

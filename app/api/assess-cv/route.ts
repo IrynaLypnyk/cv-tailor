@@ -121,7 +121,10 @@ export async function POST(req: NextRequest) {
       responseHeaders["Set-Cookie"] = buildDemoCounterCookie(existingCounter);
     }
 
-    return NextResponse.json({ sections, assessment }, { headers: responseHeaders });
+    return NextResponse.json(
+      { sections, assessment },
+      { headers: responseHeaders }
+    );
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "An unexpected error occurred.";

@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  signAdminToken,
-  buildAdminSessionCookie,
-} from "@/lib/auth/session";
+import { signAdminToken, buildAdminSessionCookie } from "@/lib/auth/session";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -35,10 +32,7 @@ export async function POST(req: NextRequest) {
   if (!password || password !== adminPassword) {
     // Use a fixed response time to avoid timing-based enumeration.
     await new Promise((resolve) => setTimeout(resolve, 300));
-    return NextResponse.json(
-      { error: "Incorrect password." },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Incorrect password." }, { status: 401 });
   }
 
   const token = signAdminToken();

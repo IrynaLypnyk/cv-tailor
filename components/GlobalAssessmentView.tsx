@@ -9,6 +9,7 @@ import type {
 import { Card } from "./Card";
 import { Select } from "./Select";
 import { SectionHeader, Subsection } from "./SectionHeader";
+import { TagList } from "./Tag";
 import { Textarea } from "./Textarea";
 
 interface UpdateConfirmationPatch {
@@ -23,7 +24,10 @@ interface GlobalAssessmentViewProps {
   onUpdateConfirmation: (id: string, patch: UpdateConfirmationPatch) => void;
 }
 
-const STATUS_OPTIONS: { value: NonNullable<ConfirmationStatus>; label: string }[] = [
+const STATUS_OPTIONS: {
+  value: NonNullable<ConfirmationStatus>;
+  label: string;
+}[] = [
   { value: "direct", label: "I have direct experience" },
   { value: "similar", label: "I have related / similar experience" },
   { value: "none", label: "I do not have this" },
@@ -36,27 +40,6 @@ const EVIDENCE_SOURCE_OPTIONS: { value: EvidenceSource; label: string }[] = [
   { value: "coursework", label: "Coursework / training" },
   { value: "basic_exposure", label: "Basic exposure only" },
 ];
-
-function TagList({ items, variant }: { items: string[]; variant: "green" | "amber" | "red" }) {
-  const colours = {
-    green: "bg-emerald-50 text-emerald-800 border border-emerald-200",
-    amber: "bg-amber-50 text-amber-800 border border-amber-200",
-    red: "bg-surface-hover text-muted-foreground border border-border",
-  };
-
-  return (
-    <ul className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <li
-          key={item}
-          className={`rounded-full px-3 py-1 text-xs font-medium ${colours[variant]}`}
-        >
-          {item}
-        </li>
-      ))}
-    </ul>
-  );
-}
 
 export function GlobalAssessmentView({
   assessment,
@@ -89,6 +72,15 @@ export function GlobalAssessmentView({
         </Subsection>
       )}
 
+      {assessment.nonActionableGaps.length > 0 && (
+        <Subsection
+          title="Non-actionable gaps"
+          description="These are real gaps that cannot be addressed by rewriting your CV."
+        >
+          <TagList items={assessment.nonActionableGaps} variant="red" />
+        </Subsection>
+      )}
+
       {confirmations.length > 0 && (
         <Subsection
           title="Needs your input"
@@ -106,7 +98,9 @@ export function GlobalAssessmentView({
                         {item.skill}
                       </span>
                       {item.context && (
-                        <span className="text-xs text-muted">{item.context}</span>
+                        <span className="text-xs text-muted">
+                          {item.context}
+                        </span>
                       )}
                     </div>
 
@@ -147,7 +141,8 @@ export function GlobalAssessmentView({
                             onChange={(e) =>
                               onUpdateConfirmation(item.id, {
                                 evidenceSource:
-                                  (e.target.value as EvidenceSource) || undefined,
+                                  (e.target.value as EvidenceSource) ||
+                                  undefined,
                               })
                             }
                           >
@@ -190,15 +185,6 @@ export function GlobalAssessmentView({
               );
             })}
           </ul>
-        </Subsection>
-      )}
-
-      {assessment.nonActionableGaps.length > 0 && (
-        <Subsection
-          title="Non-actionable gaps"
-          description="These are real gaps that cannot be addressed by rewriting your CV."
-        >
-          <TagList items={assessment.nonActionableGaps} variant="red" />
         </Subsection>
       )}
     </div>

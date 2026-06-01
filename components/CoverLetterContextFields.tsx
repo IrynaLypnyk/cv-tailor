@@ -39,7 +39,11 @@ export function CoverLetterContextFields({
         />
       </FormField>
 
-      <FormField htmlFor="cl-company-name" label="Hiring company name" hint="(optional)">
+      <FormField
+        htmlFor="cl-company-name"
+        label="Hiring company name"
+        hint="(optional)"
+      >
         <TextInput
           id="cl-company-name"
           type="text"
@@ -59,21 +63,29 @@ export function CoverLetterContextFields({
           checked={context.visibleCompanyIsRecruiter ?? false}
           disabled={disabled}
           onChange={(e) =>
-            onChange({ visibleCompanyIsRecruiter: e.target.checked || undefined })
+            onChange({
+              visibleCompanyIsRecruiter: e.target.checked || undefined,
+            })
           }
           className="mt-0.5 h-4 w-4 shrink-0 accent-foreground disabled:cursor-not-allowed"
         />
         <div className="flex flex-col gap-0.5">
           <span className="text-sm font-medium text-foreground">
-            The visible company appears to be a recruiter or agency, not the hiring company
+            The visible company appears to be a recruiter or agency, not the
+            hiring company
           </span>
           <span className="text-xs text-muted">
-            If selected, the cover letter will not refer to that company as the employer.
+            If selected, the cover letter will not refer to that company as the
+            employer.
           </span>
         </div>
       </label>
 
-      <FormField htmlFor="cl-motivation" label="Why are you interested?" hint="(optional)">
+      <FormField
+        htmlFor="cl-motivation"
+        label="Why are you interested?"
+        hint="(optional)"
+      >
         <Textarea
           id="cl-motivation"
           rows={3}
@@ -81,11 +93,17 @@ export function CoverLetterContextFields({
           placeholder="Example: I'm interested in this role because it combines React, product engineering, and AI-enabled features."
           value={context.motivation ?? ""}
           disabled={disabled}
-          onChange={(e) => onChange({ motivation: e.target.value || undefined })}
+          onChange={(e) =>
+            onChange({ motivation: e.target.value || undefined })
+          }
         />
       </FormField>
 
-      <FormField htmlFor="cl-location" label="Location or right-to-work note" hint="(optional)">
+      <FormField
+        htmlFor="cl-location"
+        label="Location or right-to-work note"
+        hint="(optional)"
+      >
         <TextInput
           id="cl-location"
           type="text"
@@ -99,7 +117,11 @@ export function CoverLetterContextFields({
         />
       </FormField>
 
-      <FormField htmlFor="cl-do-not-mention" label="Do not mention" hint="(optional)">
+      <FormField
+        htmlFor="cl-do-not-mention"
+        label="Do not mention"
+        hint="(optional)"
+      >
         <Textarea
           id="cl-do-not-mention"
           rows={2}
@@ -107,11 +129,17 @@ export function CoverLetterContextFields({
           placeholder="Example: Do not mention Azure. Do not mention Huxley as the employer."
           value={context.doNotMention ?? ""}
           disabled={disabled}
-          onChange={(e) => onChange({ doNotMention: e.target.value || undefined })}
+          onChange={(e) =>
+            onChange({ doNotMention: e.target.value || undefined })
+          }
         />
       </FormField>
 
-      <FormField htmlFor="cl-additional-notes" label="Additional cover letter notes" hint="(optional)">
+      <FormField
+        htmlFor="cl-additional-notes"
+        label="Additional cover letter notes"
+        hint="(optional)"
+      >
         <Textarea
           id="cl-additional-notes"
           rows={3}
@@ -119,7 +147,9 @@ export function CoverLetterContextFields({
           placeholder='e.g. "Make the tone warm but professional." or "Mention I am looking for a senior IC role, not management."'
           value={context.additionalNotes ?? ""}
           disabled={disabled}
-          onChange={(e) => onChange({ additionalNotes: e.target.value || undefined })}
+          onChange={(e) =>
+            onChange({ additionalNotes: e.target.value || undefined })
+          }
         />
       </FormField>
     </Card>

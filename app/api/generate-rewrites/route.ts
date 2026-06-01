@@ -29,7 +29,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSectionRewrites } from "@/lib/llm/generate-section-rewrites";
 import { generateCoverLetter as generateCoverLetterText } from "@/lib/llm/generate-cover-letter";
-import type { ConfirmationItem, CoverLetterContext, CVSection } from "@/lib/llm/types";
+import type {
+  ConfirmationItem,
+  CoverLetterContext,
+  CVSection,
+} from "@/lib/llm/types";
 import { checkAccessFromRequest } from "@/lib/auth/session";
 
 /** Shape of the expected JSON request body. */
@@ -127,7 +131,8 @@ export async function POST(req: NextRequest) {
         ? data.generateCoverLetter
         : false,
     coverLetterContext:
-      typeof data.coverLetterContext === "object" && data.coverLetterContext !== null
+      typeof data.coverLetterContext === "object" &&
+      data.coverLetterContext !== null
         ? (data.coverLetterContext as CoverLetterContext)
         : {},
   };

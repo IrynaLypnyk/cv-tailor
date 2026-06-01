@@ -38,7 +38,11 @@ export interface TailorCVActions {
   assess: (cvFile: File, jobDescription: string) => Promise<void>;
   updateConfirmation: (
     id: string,
-    patch: { status?: ConfirmationStatus; evidenceSource?: EvidenceSource; evidenceNote?: string }
+    patch: {
+      status?: ConfirmationStatus;
+      evidenceSource?: EvidenceSource;
+      evidenceNote?: string;
+    }
   ) => void;
   toggleSection: (id: string) => void;
   setAdditionalContext: (text: string) => void;
@@ -80,15 +84,32 @@ const INITIAL_STATE: TailorCVState = {
 export function useTailorCV(): TailorCVState & TailorCVActions {
   const [status, setStatus] = useState<TailorStatus>(INITIAL_STATE.status);
   const [sections, setSections] = useState<CVSection[]>(INITIAL_STATE.sections);
-  const [assessment, setAssessment] = useState<GlobalAssessment | null>(INITIAL_STATE.assessment);
-  const [confirmations, setConfirmations] = useState<ConfirmationItem[]>(INITIAL_STATE.confirmations);
-  const [selectedSectionIds, setSelectedSectionIds] = useState<string[]>(INITIAL_STATE.selectedSectionIds);
-  const [additionalContext, setAdditionalContext] = useState(INITIAL_STATE.additionalContext);
-  const [generateCoverLetter, setGenerateCoverLetter] = useState(INITIAL_STATE.generateCoverLetter);
-  const [coverLetterContext, setCoverLetterContextState] = useState<CoverLetterContext>(INITIAL_STATE.coverLetterContext);
-  const [rewrites, setRewrites] = useState<SectionRewrite[]>(INITIAL_STATE.rewrites);
-  const [coverLetter, setCoverLetter] = useState<string | undefined>(INITIAL_STATE.coverLetter);
-  const [jobDescription, setJobDescription] = useState(INITIAL_STATE.jobDescription);
+  const [assessment, setAssessment] = useState<GlobalAssessment | null>(
+    INITIAL_STATE.assessment
+  );
+  const [confirmations, setConfirmations] = useState<ConfirmationItem[]>(
+    INITIAL_STATE.confirmations
+  );
+  const [selectedSectionIds, setSelectedSectionIds] = useState<string[]>(
+    INITIAL_STATE.selectedSectionIds
+  );
+  const [additionalContext, setAdditionalContext] = useState(
+    INITIAL_STATE.additionalContext
+  );
+  const [generateCoverLetter, setGenerateCoverLetter] = useState(
+    INITIAL_STATE.generateCoverLetter
+  );
+  const [coverLetterContext, setCoverLetterContextState] =
+    useState<CoverLetterContext>(INITIAL_STATE.coverLetterContext);
+  const [rewrites, setRewrites] = useState<SectionRewrite[]>(
+    INITIAL_STATE.rewrites
+  );
+  const [coverLetter, setCoverLetter] = useState<string | undefined>(
+    INITIAL_STATE.coverLetter
+  );
+  const [jobDescription, setJobDescription] = useState(
+    INITIAL_STATE.jobDescription
+  );
   const [error, setError] = useState<string | null>(INITIAL_STATE.error);
 
   async function assess(cvFile: File, jd: string) {
@@ -160,7 +181,11 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
 
   function updateConfirmation(
     id: string,
-    patch: { status?: ConfirmationStatus; evidenceSource?: EvidenceSource; evidenceNote?: string }
+    patch: {
+      status?: ConfirmationStatus;
+      evidenceSource?: EvidenceSource;
+      evidenceNote?: string;
+    }
   ) {
     setConfirmations((prev) =>
       prev.map((c) => {
@@ -218,7 +243,10 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
 
       if (!response.ok) {
         throw new Error(
-          extractApiError(data, "Failed to generate rewrites. Please try again.")
+          extractApiError(
+            data,
+            "Failed to generate rewrites. Please try again."
+          )
         );
       }
 
@@ -230,7 +258,10 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
         throw new Error("Unexpected response from server.");
       }
 
-      const result = data as { rewrites: SectionRewrite[]; coverLetter?: string };
+      const result = data as {
+        rewrites: SectionRewrite[];
+        coverLetter?: string;
+      };
       setRewrites(result.rewrites);
       setCoverLetter(result.coverLetter);
       setStatus("done");

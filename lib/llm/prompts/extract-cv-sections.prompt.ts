@@ -67,6 +67,9 @@ Return a JSON object with exactly this shape:
   ]
 }`;
 
-export function buildUserMessage(cvText: string, jobDescription: string): string {
+export function buildUserMessage(
+  cvText: string,
+  jobDescription: string
+): string {
   return `Here is the candidate's CV:\n\n${cvText}\n\n---\n\nHere is the job description:\n\n${jobDescription}`;
 }

@@ -58,7 +58,9 @@ export function AppShell({ header, sidebar, children }: AppShellProps) {
           aria-expanded={drawerVisible}
           aria-haspopup="dialog"
         >
-          <span aria-hidden="true" className="text-base leading-none">☰</span>
+          <span aria-hidden="true" className="text-base leading-none">
+            ☰
+          </span>
           Steps
         </Button>
       </div>
@@ -90,7 +92,9 @@ export function AppShell({ header, sidebar, children }: AppShellProps) {
             ].join(" ")}
           >
             <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
-              <span className="text-sm font-semibold text-foreground">Steps</span>
+              <span className="text-sm font-semibold text-foreground">
+                Steps
+              </span>
               <Button
                 variant="icon"
                 onClick={closeDrawer}

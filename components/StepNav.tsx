@@ -27,7 +27,7 @@ function deriveStepState(
 
   if (stepId === currentStep) return "active";
   if (thisIdx < currentIdx) return "completed"; // behind current tab, done
-  if (thisIdx <= maxIdx) return "reached";      // ahead of current but accessible
+  if (thisIdx <= maxIdx) return "reached"; // ahead of current but accessible
   return "disabled";
 }
 
@@ -39,7 +39,11 @@ interface StepNavProps {
   onStepClick: (step: StepId) => void;
 }
 
-export function StepNav({ currentStep, maxReachedStep, onStepClick }: StepNavProps) {
+export function StepNav({
+  currentStep,
+  maxReachedStep,
+  onStepClick,
+}: StepNavProps) {
   return (
     <nav aria-label="Progress steps">
       <ol className="flex flex-col gap-1">
@@ -62,8 +66,10 @@ export function StepNav({ currentStep, maxReachedStep, onStepClick }: StepNavPro
                 className={[
                   "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
                   isActive && "bg-zinc-100 font-semibold text-foreground",
-                  isCompleted && "font-medium text-zinc-600 hover:bg-zinc-50 hover:text-foreground",
-                  isReached && "font-medium text-zinc-500 hover:bg-zinc-50 hover:text-foreground",
+                  isCompleted &&
+                    "font-medium text-zinc-600 hover:bg-zinc-50 hover:text-foreground",
+                  isReached &&
+                    "font-medium text-zinc-500 hover:bg-zinc-50 hover:text-foreground",
                   isDisabled && "cursor-not-allowed text-zinc-300",
                 ]
                   .filter(Boolean)

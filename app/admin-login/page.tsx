@@ -51,9 +51,7 @@ export default function AdminLoginPage() {
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           Admin login
         </h1>
-        <p className="text-sm text-zinc-500">
-          For authorised use only.
-        </p>
+        <p className="text-sm text-zinc-500">For authorised use only.</p>
       </header>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -68,11 +66,13 @@ export default function AdminLoginPage() {
           />
         </FormField>
 
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <Button variant="primary" type="submit" disabled={!password.trim() || isLoading}>
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={!password.trim() || isLoading}
+        >
           {isLoading ? "Signing in…" : "Sign in"}
         </Button>
       </form>

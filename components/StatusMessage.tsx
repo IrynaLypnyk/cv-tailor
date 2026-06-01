@@ -7,7 +7,8 @@ interface StatusMessageProps {
 }
 
 const LOADING_MESSAGES: Partial<Record<TailorStatus, string>> = {
-  assessing: "Analysing your CV against the job description — this may take a moment...",
+  assessing:
+    "Analysing your CV against the job description — this may take a moment...",
   generating: "Generating tailored rewrites — this may take a moment...",
 };
 

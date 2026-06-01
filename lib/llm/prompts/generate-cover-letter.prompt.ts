@@ -222,7 +222,8 @@ export interface CoverLetterInput {
 
 const STATUS_LABELS: Record<NonNullable<ConfirmationItem["status"]>, string> = {
   direct: "User confirmed: I have direct experience",
-  similar: "User confirmed: I have related / similar experience (do not claim direct experience)",
+  similar:
+    "User confirmed: I have related / similar experience (do not claim direct experience)",
   none: "User confirmed: I do not have this (do not include in cover letter)",
 };
 
@@ -282,7 +283,9 @@ export function buildCoverLetterUserMessage(input: CoverLetterInput): string {
     coverLetterContextLines.push(`Role title: ${ctx.roleTitle.trim()}`);
   }
   if (ctx.hiringCompanyName?.trim()) {
-    coverLetterContextLines.push(`Hiring company name: ${ctx.hiringCompanyName.trim()}`);
+    coverLetterContextLines.push(
+      `Hiring company name: ${ctx.hiringCompanyName.trim()}`
+    );
   }
   if (ctx.visibleCompanyIsRecruiter) {
     coverLetterContextLines.push(
@@ -290,16 +293,22 @@ export function buildCoverLetterUserMessage(input: CoverLetterInput): string {
     );
   }
   if (ctx.motivation?.trim()) {
-    coverLetterContextLines.push(`Candidate motivation: ${ctx.motivation.trim()}`);
+    coverLetterContextLines.push(
+      `Candidate motivation: ${ctx.motivation.trim()}`
+    );
   }
   if (ctx.locationRightToWork?.trim()) {
-    coverLetterContextLines.push(`Location / right-to-work: ${ctx.locationRightToWork.trim()}`);
+    coverLetterContextLines.push(
+      `Location / right-to-work: ${ctx.locationRightToWork.trim()}`
+    );
   }
   if (ctx.doNotMention?.trim()) {
     coverLetterContextLines.push(`Do NOT mention: ${ctx.doNotMention.trim()}`);
   }
   if (ctx.additionalNotes?.trim()) {
-    coverLetterContextLines.push(`Additional notes: ${ctx.additionalNotes.trim()}`);
+    coverLetterContextLines.push(
+      `Additional notes: ${ctx.additionalNotes.trim()}`
+    );
   }
 
   const coverLetterContextBlock =

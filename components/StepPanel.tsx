@@ -17,11 +17,7 @@ export function StepPanel({
   return (
     <div
       data-component="StepPanel"
-      className={
-        hidden
-          ? "hidden"
-          : `flex flex-col gap-8 ${className}`.trim()
-      }
+      className={hidden ? "hidden" : `flex flex-col gap-8 ${className}`.trim()}
     >
       {children}
     </div>
