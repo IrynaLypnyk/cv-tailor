@@ -4,6 +4,8 @@ An AI-powered CV tailoring tool that analyses your CV against a specific job des
 
 Built as a personal project to solve a real problem I faced during job applications: adapting CVs honestly and efficiently for specific roles.
 
+🔗 Live demo: [cv-tailor-assistant.vercel.app](https://cv-tailor-assistant.vercel.app)
+
 ---
 
 ## Table of Contents
@@ -114,20 +116,6 @@ flowchart TD
 ## Why This Project
 
 Job seekers often apply with generic CVs that fail to surface relevant experience for a specific role. CV Tailor addresses this by treating the tailoring process as a structured, evidence-driven workflow rather than a freeform editing task. The AI identifies what to emphasise, surfaces gaps that need clarification, and generates rewrites only after the candidate has confirmed what they can honestly claim.
-
----
-
-## Screenshots
-
-> Screenshots coming soon.
-
-| Screen            | Description                                    |
-| ----------------- | ---------------------------------------------- |
-| Home / upload     | CV upload and job description input            |
-| Global assessment | Strengths, gaps, and confirmation items        |
-| Confirmation flow | Per-skill answer with evidence notes           |
-| Section rewrites  | Before/after comparison for each section       |
-| Cover letter      | Generated cover letter with structured context |
 
 ---
 
