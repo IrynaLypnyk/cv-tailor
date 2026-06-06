@@ -4,9 +4,15 @@ import { UploadIcon } from "../icons/UploadIcon";
 type FileInputProps = Omit<
   React.ComponentPropsWithoutRef<"input">,
   "size" | "type"
->;
+> & {
+  cvFile: File | null;
+};
 
-export function FileInput({ className = "", ...props }: FileInputProps) {
+export function FileInput({
+  className = "",
+  cvFile,
+  ...props
+}: FileInputProps) {
   return (
     <div className="relative" data-component="FileInput">
       <input
@@ -24,7 +30,7 @@ export function FileInput({ className = "", ...props }: FileInputProps) {
         <div className="text-center">
           <div>
             <p className="font-medium text-slate-900">
-              Cover Letter (base).docx
+              {cvFile?.name || "Click to upload or drag and drop (.docx only)"}
             </p>
             <p className="text-sm text-slate-500">Click to change file</p>
           </div>

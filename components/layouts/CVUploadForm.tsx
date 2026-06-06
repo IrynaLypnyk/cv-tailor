@@ -30,16 +30,14 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
       onSubmit={handleSubmit}
       className="flex flex-col gap-6"
     >
-      <FormField htmlFor="cv-upload" label="CV file" hint="(.docx only)">
+      <FormField htmlFor="cv-upload" label="Upload Your CV">
         <FileInput
           id="cv-upload"
           accept=".docx"
           disabled={isLoading}
           onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
+          cvFile={cvFile}
         />
-        {cvFile && (
-          <p className="text-xs text-zinc-500">Selected: {cvFile.name}</p>
-        )}
       </FormField>
 
       <FormField htmlFor="job-description" label="Job description">
