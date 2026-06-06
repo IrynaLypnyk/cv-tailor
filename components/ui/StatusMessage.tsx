@@ -1,5 +1,5 @@
 import type { TailorStatus } from "@/hooks/useTailorCV";
-import { AlertBanner } from "./AlertBanner";
+import { AlertBanner } from "@/components/ui/AlertBanner";
 
 interface StatusMessageProps {
   status: TailorStatus;
@@ -21,7 +21,9 @@ export function StatusMessage({ status, error }: StatusMessageProps) {
         <p className="text-sm text-zinc-500">{loadingMessage}</p>
       )}
       {status === "error" && error && (
-        <AlertBanner variant="red">{error}</AlertBanner>
+        <AlertBanner variant="red" title="Error">
+          {error}
+        </AlertBanner>
       )}
       <p className="text-xs text-zinc-400">
         Your CV is processed in memory and is never stored on our servers.
