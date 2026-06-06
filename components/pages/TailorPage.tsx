@@ -136,15 +136,6 @@ export function TailorPage({
           </div>
 
           <main className="pb-12">
-            {/* {showDemoBanner && (
-              <AlertBanner variant="amber">
-                <span className="font-semibold">Demo mode:</span> you can try up
-                to 2 real AI requests. Full access is available only to the
-                admin.
-              </AlertBanner>
-            )} */}
-            {/* Upload panel — always mounted to preserve local file/JD state.
-            Visibility toggled by CSS so the form never remounts on tab switch. */}
             <StepPanel hidden={activeStep !== "upload"}>
               {demoLimitReached ? (
                 <AlertBanner

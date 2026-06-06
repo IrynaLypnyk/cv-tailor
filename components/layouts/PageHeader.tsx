@@ -59,7 +59,12 @@ export function PageHeader({
           <AlertBanner
             variant="amber"
             title="Guest Mode"
-            description="Limited Access. 2 real AI requests"
+            description={
+              <>
+                <span className="font-semibold">Limited Access.</span>
+                <br /> <span>2 real AI requests</span>
+              </>
+            }
           />
         )}
         {isAdmin ? (

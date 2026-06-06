@@ -3,7 +3,7 @@ import { PersonIcon } from "../icons/PersonIcon";
 interface AlertBannerProps {
   variant: "amber" | "red" | "info";
   title?: string;
-  description?: string;
+  description?: string | React.ReactNode;
   children?: React.ReactNode;
 }
 
