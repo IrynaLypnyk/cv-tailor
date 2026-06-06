@@ -11,13 +11,13 @@ interface SectionHeaderProps {
 }
 
 const TITLE_CLASSES: Record<SectionHeaderLevel, string> = {
-  page: "text-base font-semibold text-foreground",
-  section: "text-sm font-semibold text-foreground",
+  page: "text-2xl font-bold text-foreground",
+  section: "text-base font-semibold text-foreground",
 };
 
 const DESCRIPTION_CLASSES: Record<SectionHeaderLevel, string> = {
-  page: "text-sm text-muted",
-  section: "text-xs text-muted",
+  page: "text-muted",
+  section: "text-sm text-muted",
 };
 
 const GAP_CLASSES: Record<SectionHeaderLevel, string> = {

@@ -1,9 +1,9 @@
 export type TagVariant = "green" | "amber" | "red";
 
 const VARIANT_CLASSES: Record<TagVariant, string> = {
-  green: "border-emerald-200 bg-emerald-50 text-emerald-800",
-  amber: "border-amber-200 bg-amber-50 text-amber-800",
-  red: "border-red-200 bg-red-50 text-red-800",
+  green: "bg-emerald-50 text-emerald-800",
+  amber: "bg-amber-50 text-amber-800",
+  red: "bg-red-50 text-red-800",
 };
 
 interface TagProps {
@@ -15,7 +15,7 @@ export function Tag({ children, variant }: TagProps) {
   return (
     <span
       data-component="Tag"
-      className={`rounded-full border px-3 py-1 text-xs font-medium ${VARIANT_CLASSES[variant]}`}
+      className={`rounded-full px-3 py-1 text-xs font-medium ${VARIANT_CLASSES[variant]}`}
     >
       {children}
     </span>

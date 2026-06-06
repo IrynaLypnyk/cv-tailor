@@ -1,11 +1,11 @@
 "use client";
 
 import type { CVSection, CoverLetterContext } from "@/lib/llm/types";
-import { Button } from "./Button";
-import { Card } from "./Card";
-import { CoverLetterContextFields } from "./CoverLetterContextFields";
-import { Subsection } from "./SectionHeader";
-import { Textarea } from "./Textarea";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import { CoverLetterContextFields } from "@/components/layouts/CoverLetterContextFields";
+import { Subsection } from "../ui/SectionHeader";
+import { Textarea } from "../ui/Textarea";
 
 interface ConfirmAndGenerateFormProps {
   sections: CVSection[];

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "./Button";
-import { FileInput } from "./FileInput";
-import { Textarea } from "./Textarea";
-import { FormField } from "./FormField";
+import { Button } from "@/components/ui/Button";
+import { FileInput } from "@/components/ui/FileInput";
+import { Textarea } from "@/components/ui/Textarea";
+import { FormField } from "@/components/ui/FormField";
+import { ArrowRightIcon } from "@/components/icons/ArrowRightIcon";
 
 interface CVUploadFormProps {
   onSubmit: (cvFile: File, jobDescription: string) => void;
@@ -52,14 +53,12 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
         />
       </FormField>
 
-      <Button
-        variant="primary"
-        type="submit"
-        disabled={isDisabled}
-        className="self-start"
-      >
-        {isLoading ? "Tailoring..." : "Tailor CV"}
-      </Button>
+      <div className="flex justify-start">
+        <Button variant="primary" type="submit" disabled={isDisabled}>
+          {isLoading ? "Tailoring..." : "Analyze CV"}
+          {isLoading ? null : <ArrowRightIcon className="w-5 h-5" />}
+        </Button>
+      </div>
     </form>
   );
 }

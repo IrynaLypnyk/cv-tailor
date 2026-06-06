@@ -14,14 +14,14 @@ interface ButtonProps {
 
 const VARIANT_CLASSES: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
-    "rounded-md bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40",
+    "rounded-md bg-foreground px-6 py-3 font-medium text-background transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40",
   secondary:
-    "rounded border border-border bg-surface-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-40",
+    "rounded bg-surface-brand-secondary px-3 py-1.5 font-medium text-brand-secondary transition-colors hover:bg-brand-secondary hover:text-background disabled:cursor-not-allowed disabled:opacity-40",
   ghost:
-    "text-sm text-muted underline underline-offset-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
+    "text-muted underline underline-offset-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
   /** Compact control for toolbars and mobile chrome (e.g. “Steps” toggle). */
   subtle:
-    "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
+    "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-medium text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
   /** Minimal icon-only control (e.g. drawer close). */
   icon: "rounded-md p-1 text-muted-subtle transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40",
 };
@@ -41,7 +41,7 @@ export function Button({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`${VARIANT_CLASSES[variant]} ${className}`.trim()}
+      className={`cursor-pointer flex items-center whitespace-nowrap gap-2 ${VARIANT_CLASSES[variant]} ${className}`.trim()}
       {...aria}
     >
       {children}

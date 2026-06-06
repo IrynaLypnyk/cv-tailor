@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/Button";
-import { TextInput } from "@/components/TextInput";
-import { FormField } from "@/components/FormField";
+import { Button } from "@/components/ui/Button";
+import { TextInput } from "@/components/ui/TextInput";
+import { FormField } from "@/components/ui/FormField";
 
 export default function AdminLoginPage() {
   const router = useRouter();

@@ -21,7 +21,7 @@ function cardClassName(
 ): string {
   const surface = selected
     ? "border-border-strong bg-surface-muted"
-    : "border-border bg-background";
+    : "border-border bg-white";
 
   return ["rounded-md border", surface, PADDING_CLASSES[padding], className]
     .filter(Boolean)

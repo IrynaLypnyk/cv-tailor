@@ -1,10 +1,10 @@
 "use client";
 
 import type { CoverLetterContext } from "@/lib/llm/types";
-import { Card } from "./Card";
-import { FormField } from "./FormField";
-import { TextInput } from "./TextInput";
-import { Textarea } from "./Textarea";
+import { Card } from "@/components/ui/Card";
+import { FormField } from "@/components/ui/FormField";
+import { TextInput } from "@/components/ui/TextInput";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface CoverLetterContextFieldsProps {
   context: CoverLetterContext;

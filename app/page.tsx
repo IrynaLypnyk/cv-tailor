@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { getAccessInfo } from "@/lib/auth/session";
-import { TailorPage } from "@/components/TailorPage";
+import { TailorPage } from "@/components/pages/TailorPage";
 
 /**
  * Server component — reads cookies and searchParams before rendering so

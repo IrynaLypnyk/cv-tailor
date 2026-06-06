@@ -6,11 +6,11 @@ import type {
   ConfirmationStatus,
   EvidenceSource,
 } from "@/lib/llm/types";
-import { Card } from "./Card";
-import { Select } from "./Select";
-import { SectionHeader, Subsection } from "./SectionHeader";
-import { TagList } from "./Tag";
-import { Textarea } from "./Textarea";
+import { Card } from "@/components/ui/Card";
+import { Select } from "@/components/ui/Select";
+import { SectionHeader, Subsection } from "@/components/ui/SectionHeader";
+import { TagList } from "@/components/ui/Tag";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface UpdateConfirmationPatch {
   status?: ConfirmationStatus;

@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import type { SectionRewrite } from "@/lib/llm/types";
-import { Button } from "./Button";
-import { Card } from "./Card";
-import { SectionHeader } from "./SectionHeader";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import { SectionHeader } from "../ui/SectionHeader";
+import { Textarea } from "../ui/Textarea";
+import { CopyIcon } from "../icons/CopyIcon";
+import { CheckIcon } from "../icons/CheckIcon";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -21,12 +24,18 @@ function CopyButton({ text }: { text: string }) {
 
   return (
     <Button variant="secondary" onClick={handleCopy} className="shrink-0">
-      {copied ? "Copied!" : "Copy"}
+      <CopyIcon className="w-4 h-4" /> {copied ? "Copied!" : "Copy text"}
     </Button>
   );
 }
 
-function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
+function RewriteCard({
+  rewrite,
+  onUpdateRewrite,
+}: {
+  rewrite: SectionRewrite;
+  onUpdateRewrite: (sectionId: string, text: string) => void;
+}) {
   return (
     <Card
       padding="md"
@@ -34,37 +43,39 @@ function RewriteCard({ rewrite }: { rewrite: SectionRewrite }) {
       data-component="RewriteCard"
     >
       <h3 className="text-sm font-semibold text-foreground">{rewrite.title}</h3>
+      {rewrite.notes && (
+        <p className="leading-5 flex items-center gap-2">
+          <span className="font-semibold text-brand-secondary">
+            <CheckIcon className="w-5 h-5" />
+          </span>
+          {rewrite.notes}
+        </p>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-subtle">
+          <span className="font-semibold uppercase tracking-widest">
             Before
           </span>
-          <p className="h-full whitespace-pre-wrap rounded-md border border-border bg-background px-4 py-3 text-sm leading-6 text-muted">
+          <p className="h-full whitespace-pre-wrap rounded-md border border-border px-4 py-3 text-sm leading-6 text-muted">
             {rewrite.originalText}
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-subtle">
-            After
-          </span>
-          <p className="h-full whitespace-pre-wrap rounded-md border border-border bg-surface-muted px-4 py-3 text-sm leading-6 text-foreground">
-            {rewrite.rewrittenText}
-          </p>
+          <span className="font-semibold uppercase tracking-widest">After</span>
+
+          <Textarea
+            className="h-full whitespace-pre-wrap rounded-md border border-border bg-surface-muted px-4 py-3 text-sm leading-6 text-foreground"
+            value={rewrite.rewrittenText}
+            onChange={(e) => onUpdateRewrite(rewrite.sectionId, e.target.value)}
+          />
         </div>
       </div>
 
       <div className="flex justify-end">
         <CopyButton text={rewrite.rewrittenText} />
       </div>
-
-      {rewrite.notes && (
-        <p className="text-sm leading-5 text-muted">
-          <span className="font-semibold">Note: </span>
-          {rewrite.notes}
-        </p>
-      )}
     </Card>
   );
 }
@@ -89,26 +100,20 @@ function CoverLetterCard({ text }: { text: string }) {
 
 interface SectionRewriteResultProps {
   rewrites: SectionRewrite[];
+  onUpdateRewrite: (sectionId: string, text: string) => void;
   coverLetter?: string;
   onReset: () => void;
 }
 
 export function SectionRewriteResult({
   rewrites,
+  onUpdateRewrite,
   coverLetter,
   onReset,
 }: SectionRewriteResultProps) {
   return (
     <div data-component="SectionRewriteResult" className="flex flex-col gap-8">
-      <SectionHeader
-        level="page"
-        title="Tailored CV sections"
-        actions={
-          <Button variant="ghost" onClick={onReset}>
-            Start again
-          </Button>
-        }
-      />
+      <SectionHeader level="page" title="Tailored CV sections" />
 
       {rewrites.length === 0 ? (
         <p className="text-sm text-muted">No rewrites were generated.</p>
@@ -116,7 +121,10 @@ export function SectionRewriteResult({
         <ul className="flex flex-col gap-6">
           {rewrites.map((rewrite) => (
             <li key={rewrite.sectionId}>
-              <RewriteCard rewrite={rewrite} />
+              <RewriteCard
+                rewrite={rewrite}
+                onUpdateRewrite={onUpdateRewrite}
+              />
             </li>
           ))}
         </ul>

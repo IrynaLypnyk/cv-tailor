@@ -45,7 +45,7 @@ export function StepNav({
   onStepClick,
 }: StepNavProps) {
   return (
-    <nav aria-label="Progress steps">
+    <nav aria-label="Progress steps" className="p-6">
       <ol className="flex flex-col gap-1">
         {STEPS.map((step, index) => {
           const state = deriveStepState(step.id, currentStep, maxReachedStep);
@@ -88,7 +88,7 @@ export function StepNav({
                     .filter(Boolean)
                     .join(" ")}
                 >
-                  {isCompleted ? "✓" : index + 1}
+                  {index + 1}
                 </span>
 
                 <span className="leading-tight">{step.label}</span>

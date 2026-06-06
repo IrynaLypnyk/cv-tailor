@@ -6,12 +6,16 @@
  * Values align with the current light zinc palette (zinc-50 … zinc-600).
  */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
+
+  /* --brand- */
+  --brand-primary: #476179;
+  --brand-secondary: #665f75;
 
   /* Typography / muted text */
   --muted: #71717a;
-  --muted-foreground: #52525b;
+  --muted-foreground: #434656;
   --muted-subtle: #a1a1aa;
 
   /* Borders */
@@ -19,10 +23,12 @@
   --border-subtle: #f4f4f5;
   --border-input: #d4d4d8;
   --border-strong: #a1a1aa;
-  --border-focus: #71717a;
+  --border-focus: #e1e1f5;
 
   /* Surfaces (cards, sidebar, selected rows) */
   --surface: #ffffff;
+  --surface-brand-primary: #e1f4ff;
+  --surface-brand-secondary: rgba(229, 220, 246, 0.3);
   --surface-muted: #fafafa;
   --surface-hover: #f4f4f5;
   --surface-active: #e4e4e7;
@@ -35,6 +41,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted-subtle: var(--muted-subtle);
@@ -47,6 +55,9 @@
   --color-surface-muted: var(--surface-muted);
   --color-surface-hover: var(--surface-hover);
   --color-surface-active: var(--surface-active);
+  --color-surface-brand-primary: var(--surface-brand-primary);
+  --color-surface-brand-secondary: var(--surface-brand-secondary);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --width-sidebar: var(--sidebar-width);

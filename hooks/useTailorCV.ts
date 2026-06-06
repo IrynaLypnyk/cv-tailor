@@ -47,6 +47,7 @@ export interface TailorCVActions {
   toggleSection: (id: string) => void;
   setAdditionalContext: (text: string) => void;
   setGenerateCoverLetter: (value: boolean) => void;
+  updateRewriteText: (sectionId: string, text: string) => void;
   setCoverLetterContext: (patch: Partial<CoverLetterContext>) => void;
   generateRewrites: () => Promise<void>;
   /** Full reset — clears all state back to initial values (used for "Start over"). */
@@ -201,6 +202,14 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     );
   }
 
+  function updateRewriteText(sectionId: string, text: string) {
+    setRewrites((prev) =>
+      prev.map((r) =>
+        r.sectionId === sectionId ? { ...r, rewrittenText: text } : r
+      )
+    );
+  }
+
   function setCoverLetterContext(patch: Partial<CoverLetterContext>) {
     setCoverLetterContextState((prev) => ({ ...prev, ...patch }));
   }
@@ -300,6 +309,7 @@ export function useTailorCV(): TailorCVState & TailorCVActions {
     confirmations,
     selectedSectionIds,
     additionalContext,
+    updateRewriteText,
     generateCoverLetter,
     coverLetterContext,
     rewrites,
