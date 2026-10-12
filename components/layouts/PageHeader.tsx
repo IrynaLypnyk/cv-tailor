@@ -1,10 +1,12 @@
 "use client";
+import Link from "next/link";
 import { capitalizeFirstLetter } from "@/lib/utils/capitilizaFirstLetter";
 import { StepId } from "./StepNav";
 import { Button } from "../ui/Button";
 import { BurgerMenuIcon } from "../icons/BurgerMenuIcon";
 import { LogoutIcon } from "../icons/LogoutIcon";
 import { AlertBanner } from "../ui/AlertBanner";
+import { PersonIcon } from "../icons/PersonIcon";
 
 interface PageHeaderProps {
   activeStep: StepId;
@@ -23,7 +25,6 @@ export function PageHeader({
 }: PageHeaderProps) {
   const title = capitalizeFirstLetter(activeStep);
   const description = "AI-powered CV optimization for your dream job";
-  console.log(isForcedDemoMode, isAdmin);
   return (
     <header
       data-component="PageHeader"
@@ -46,13 +47,17 @@ export function PageHeader({
       </div>
       <div className="flex items-center gap-2">
         {isAdmin && isForcedDemoMode && (
-          <AlertBanner variant="info" title="Admin Mode">
-            <a
+          <AlertBanner
+            variant="info"
+            title="Admin Mode"
+            icon={<PersonIcon className={`w-5 h-5`} />}
+          >
+            <Link
               href="/"
               className="underline underline-offset-2 hover:opacity-70"
             >
               Exit demo preview
-            </a>
+            </Link>
           </AlertBanner>
         )}
         {!isAdmin && (
@@ -65,6 +70,7 @@ export function PageHeader({
                 <br /> <span>2 real AI requests</span>
               </>
             }
+            icon={<PersonIcon className={`w-5 h-5`} />}
           />
         )}
         {isAdmin ? (

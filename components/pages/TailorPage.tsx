@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTailorCV } from "@/hooks/useTailorCV";
 import { CVUploadForm } from "@/components/layouts/CVUploadForm";
 import { GlobalAssessmentView } from "@/components/layouts/GlobalAssessmentView";
@@ -16,6 +16,7 @@ import { PanelDivider } from "@/components/ui/PanelDivider";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StepPanel } from "@/components/ui/StepPanel";
 import type { StepId } from "@/components/layouts/StepNav";
+import { PersonIcon } from "../icons/PersonIcon";
 
 interface TailorPageProps {
   /** Resolved server-side from cookies; determines which access banner to show. */
@@ -51,12 +52,12 @@ export function TailorPage({
     setGenerateCoverLetter,
     setCoverLetterContext,
     generateRewrites,
-    reset,
   } = useTailorCV();
 
   // Active tab — controls which single content panel is visible.
   // Pure UI concern, decoupled from workflow status.
   const [activeStep, setActiveStep] = useState<StepId>("upload");
+  const [previousStatus, setPreviousStatus] = useState(status);
   const [mobileSidebarVisible, setMobileSidebarVisible] = useState(false);
 
   function openMobileSidebar() {
@@ -66,11 +67,12 @@ export function TailorPage({
   function closeMobileSidebar() {
     setMobileSidebarVisible(false);
   }
-  // Auto-advance to the relevant tab when the workflow reaches key milestones.
-  useEffect(() => {
+  // Update on workflow transitions only, so manual tab navigation is preserved.
+  if (status !== previousStatus) {
+    setPreviousStatus(status);
     if (status === "confirming") setActiveStep("assessment");
     if (status === "done") setActiveStep("tailored-cv");
-  }, [status]);
+  }
 
   // Furthest step reached — derived from data presence, never goes backward on
   // tab navigation. Resets naturally when assess() clears assessment/rewrites.
@@ -91,8 +93,6 @@ export function TailorPage({
   const effectiveIsAdmin = isAdmin && !isForcedDemoMode;
   const demoLimitReached =
     !effectiveIsAdmin && accessInfo?.demoLimitReached === true;
-  // Show the demo info banner to non-admin users who still have requests left.
-  const showDemoBanner = !effectiveIsAdmin && !demoLimitReached;
 
   async function handleLogout() {
     await fetch("/api/admin-logout", { method: "POST" });
@@ -142,6 +142,7 @@ export function TailorPage({
                   variant="red"
                   title="Demo limit reached."
                   description="You've used your 2 demo requests. Please try again in 3 days."
+                  icon={<PersonIcon className={`w-5 h-5`} />}
                 ></AlertBanner>
               ) : (
                 <>
@@ -205,7 +206,6 @@ export function TailorPage({
                 <SectionRewriteResult
                   rewrites={rewrites}
                   coverLetter={coverLetter}
-                  onReset={reset}
                   onUpdateRewrite={updateRewriteText}
                 />
               </StepPanel>

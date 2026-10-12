@@ -6,6 +6,7 @@ interface FormFieldProps {
   /** Optional helper sentence rendered below the label and above the control. */
   description?: string;
   children: React.ReactNode;
+  error?: string | null;
 }
 
 export function FormField({
@@ -14,6 +15,7 @@ export function FormField({
   hint,
   description,
   children,
+  error,
 }: FormFieldProps) {
   return (
     <div data-component="FormField" className="flex flex-col gap-2">
@@ -23,6 +25,15 @@ export function FormField({
       </label>
       {description && <p className="text-xs text-foreground">{description}</p>}
       {children}
+      {error && (
+        <p
+          id={`${htmlFor}-error`}
+          role="alert"
+          className="text-sm text-red-600"
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 }

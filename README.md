@@ -8,21 +8,6 @@ Built as a personal project to solve a real problem I faced during job applicati
 
 ---
 
-## Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture Highlights](#architecture-highlights)
-- [AI Workflow](#ai-workflow)
-- [Why This Project](#why-this-project)
-- [Screenshots](#screenshots)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Future Improvements](#future-improvements)
-- [Engineering Focus](#engineering-focus)
-
----
-
 ## Features
 
 - **CV and job description input** — accepts `.docx CV` uploads and plain-text job descriptions, then extracts structured CV sections and analyses them against the target role.

@@ -1,10 +1,9 @@
-import { PersonIcon } from "../icons/PersonIcon";
-
 interface AlertBannerProps {
   variant: "amber" | "red" | "info";
   title?: string;
   description?: string | React.ReactNode;
   children?: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
 const BG_COLOR_CLASSES: Record<AlertBannerProps["variant"], string> = {
@@ -29,13 +28,14 @@ export function AlertBanner({
   title,
   description,
   children,
+  icon,
 }: AlertBannerProps) {
   return (
     <div
       data-component="AlertBanner"
       className={`rounded-lg border px-4 py-2 text-sm ${TEXT_COLOR_CLASSES[variant]} ${BG_COLOR_CLASSES[variant]} flex items-center gap-2`}
     >
-      <PersonIcon className={`w-5 h-5 ${TEXT_COLOR_CLASSES[variant]}`} />
+      {icon}
       <div className="text-left">
         {title && (
           <p className={`text-sm font-medium ${TITLE_COLOR_CLASSES[variant]}`}>

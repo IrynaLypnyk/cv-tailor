@@ -28,6 +28,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { extractTextFromDocx } from "@/lib/docx/extract-text";
+import { MAX_CV_FILE_SIZE, CV_FILE_SIZE_ERROR } from "@/lib/docx/upload-limits";
 import { extractCVSections } from "@/lib/llm/extract-cv-sections";
 import { assessCVGlobally } from "@/lib/llm/assess-cv-globally";
 import {
@@ -71,6 +72,10 @@ export async function POST(req: NextRequest) {
       { error: "Missing field: cv (must be a .docx file)." },
       { status: 400 }
     );
+  }
+
+  if (cvFile.size > MAX_CV_FILE_SIZE) {
+    return NextResponse.json({ error: CV_FILE_SIZE_ERROR }, { status: 413 });
   }
 
   if (

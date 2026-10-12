@@ -102,14 +102,12 @@ interface SectionRewriteResultProps {
   rewrites: SectionRewrite[];
   onUpdateRewrite: (sectionId: string, text: string) => void;
   coverLetter?: string;
-  onReset: () => void;
 }
 
 export function SectionRewriteResult({
   rewrites,
   onUpdateRewrite,
   coverLetter,
-  onReset,
 }: SectionRewriteResultProps) {
   return (
     <div data-component="SectionRewriteResult" className="flex flex-col gap-8">

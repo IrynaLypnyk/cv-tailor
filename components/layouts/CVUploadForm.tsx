@@ -6,6 +6,7 @@ import { FileInput } from "@/components/ui/FileInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { FormField } from "@/components/ui/FormField";
 import { ArrowRightIcon } from "@/components/icons/ArrowRightIcon";
+import { MAX_CV_FILE_SIZE, CV_FILE_SIZE_ERROR } from "@/lib/docx/upload-limits";
 
 interface CVUploadFormProps {
   onSubmit: (cvFile: File, jobDescription: string) => void;
@@ -14,12 +15,25 @@ interface CVUploadFormProps {
 
 export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const [jobDescription, setJobDescription] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!cvFile || !jobDescription.trim()) return;
     onSubmit(cvFile, jobDescription.trim());
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    if (file && file.size > MAX_CV_FILE_SIZE) {
+      setFileError(CV_FILE_SIZE_ERROR);
+      setCvFile(null);
+      e.target.value = ""; // reset the input so the same file can be re-selected
+      return;
+    }
+    setFileError(null);
+    setCvFile(file);
   }
 
   const isDisabled = !cvFile || !jobDescription.trim() || isLoading;
@@ -30,13 +44,20 @@ export function CVUploadForm({ onSubmit, isLoading }: CVUploadFormProps) {
       onSubmit={handleSubmit}
       className="flex flex-col gap-6"
     >
-      <FormField htmlFor="cv-upload" label="Upload Your CV">
+      <FormField
+        htmlFor="cv-upload"
+        label="Upload Your CV"
+        hint="(.docx, max 4 MB)"
+        error={fileError}
+      >
         <FileInput
           id="cv-upload"
           accept=".docx"
           disabled={isLoading}
-          onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
+          onChange={handleFileChange}
           cvFile={cvFile}
+          aria-invalid={Boolean(fileError)}
+          aria-describedby={fileError ? "cv-upload-error" : undefined}
         />
       </FormField>
 

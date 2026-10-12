@@ -19,12 +19,14 @@ async function callOpenAI(
 
   const client = new OpenAI({ apiKey });
 
+  const prompt = buildUserMessage(sections, jobDescription);
+
   const response = await client.chat.completions.create({
     model,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: buildUserMessage(sections, jobDescription) },
+      { role: "user", content: prompt },
     ],
   });
 

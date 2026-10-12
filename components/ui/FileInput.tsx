@@ -19,8 +19,6 @@ export function FileInput({
         {...props}
         type="file"
         className={`hidden ${FILE_INPUT_CLASSES} ${className}`.trim()}
-        accept=".pdf,.doc,.docx"
-        id="cv-upload"
       />
       <label
         htmlFor="cv-upload"

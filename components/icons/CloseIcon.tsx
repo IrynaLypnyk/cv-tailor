@@ -1,10 +1,10 @@
 import type { IconProps } from "./types";
 
-export function CloseIcon({ className }: IconProps) {
+export function CloseIcon({ className = "h-5 w-5" }: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-5 w-5"
+      className={className}
       fill="none"
       stroke="currentColor"
     >
